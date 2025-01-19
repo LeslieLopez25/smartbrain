@@ -1,4 +1,4 @@
-<h1>Face Recognition Brain :adult:</h1>
+<h1>SmartBrain :brain:</h1>
 
 <h2>An app that detects faces uses the Clarifai API.</h2>
 
@@ -18,7 +18,7 @@ Discover the future of web applications with our feature-rich platform.</p>
 
 ### Link
 
-- Live Site: [Face Recognition Brain](https://face-recognition-brain13.netlify.app/)
+- Live Site: [SmartBrain](https://smartbrain-mtf1.onrender.com)
 
 ### Screenshots
 
