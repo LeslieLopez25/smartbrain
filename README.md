@@ -10,7 +10,7 @@
 
 - Data is stored efficiently in a PostgreSQL database, ensuring reliability and scalability.
 
-- Seamlessly deployed on Netlify for the frontend, Render for the backend, and Neon for the database, guaranteeing optimal performance.
+- Seamlessly deployed on Render for the frontend and the backend, and Neon for the database, guaranteeing optimal performance.
 
 - Now enhanced to detect multiple faces, making it more versatile and powerful than ever.
 
