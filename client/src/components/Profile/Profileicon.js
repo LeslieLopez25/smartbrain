@@ -6,7 +6,11 @@ import {
   DropdownItem,
 } from "reactstrap";
 
-export default function ProfileIcon({ direction = "down", ...args }) {
+export default function ProfileIcon({
+  onRouteChange,
+  direction = "down",
+  ...args
+}) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const toggle = () => setDropdownOpen((prevState) => !prevState);
@@ -22,6 +26,7 @@ export default function ProfileIcon({ direction = "down", ...args }) {
           />
         </DropdownToggle>
         <DropdownMenu
+          right
           {...args}
           className="b--transparent shadow-5"
           style={{
@@ -30,7 +35,9 @@ export default function ProfileIcon({ direction = "down", ...args }) {
           }}
         >
           <DropdownItem>View Profile</DropdownItem>
-          <DropdownItem>Sign Out</DropdownItem>
+          <DropdownItem onClick={() => onRouteChange("signout")}>
+            Sign Out
+          </DropdownItem>
         </DropdownMenu>
       </Dropdown>
     </div>

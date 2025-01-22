@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import LoadingScreen from "react-loading-screen";
+import "./Signin.css";
 
 export default function Signin({ loadUser, onRouteChange }) {
   const [signInData, setSignInData] = useState({
@@ -55,13 +56,13 @@ export default function Signin({ loadUser, onRouteChange }) {
         <main className="pa4 white">
           <div className="measure">
             <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
-              <legend className="f1 fw6 ph0 mh0 center">Log In</legend>
+              <legend className="f1 fw6 ph0 mh0 center">Sign In</legend>
               <div className="mt3">
                 <label className="db fw6 lh-copy f6" htmlFor="email-address">
                   Email
                 </label>
                 <input
-                  className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
+                  className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100 hover-black"
                   type="email"
                   name="email-address"
                   id="email-address"
@@ -73,7 +74,7 @@ export default function Signin({ loadUser, onRouteChange }) {
                   Password
                 </label>
                 <input
-                  className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
+                  className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100 hover-black"
                   type="password"
                   name="password"
                   id="password"
@@ -86,7 +87,7 @@ export default function Signin({ loadUser, onRouteChange }) {
                 onClick={onSubmitSignIn}
                 className="b ph3 pv2 input-reset ba b--black white bg-transparent grow pointer f6 dib"
                 type="submit"
-                value="Log In"
+                value="Sign In"
               />
             </div>
             <div className="lh-copy mt3">

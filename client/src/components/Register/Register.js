@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import LoadingScreen from "react-loading-screen";
+import "./Register";
 
 export default function Register({ loadUser, onRouteChange }) {
   const [userData, setUserData] = useState({
@@ -67,7 +68,7 @@ export default function Register({ loadUser, onRouteChange }) {
                   Name
                 </label>
                 <input
-                  className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
+                  className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100 hover-black"
                   type="text"
                   name="name"
                   id="name"
@@ -79,7 +80,7 @@ export default function Register({ loadUser, onRouteChange }) {
                   Email
                 </label>
                 <input
-                  className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
+                  className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100 hover-black"
                   type="email"
                   name="email-address"
                   id="email-address"
@@ -91,7 +92,7 @@ export default function Register({ loadUser, onRouteChange }) {
                   Password
                 </label>
                 <input
-                  className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
+                  className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100 hover-black"
                   type="password"
                   name="password"
                   id="password"

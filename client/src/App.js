@@ -111,7 +111,7 @@ export default function App() {
 
   const onRouteChange = (route) => {
     if (route === "signout") {
-      setState(initialState);
+      return setState(initialState);
     } else if (route === "home") {
       setState((prevState) => ({ ...prevState, isSignedIn: true }));
     }
