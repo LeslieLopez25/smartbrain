@@ -4,7 +4,9 @@ import "./Modal.css";
 
 const modalRoot = document.getElementById("modal-root");
 
-export default function Modal({ children, el }) {
+export default function Modal({ children }) {
+  const el = document.createElement("div");
+
   useEffect(() => {
     modalRoot.appendChild(el);
 

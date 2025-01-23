@@ -2,6 +2,7 @@ import React, { useState, Suspense, lazy } from "react";
 import ParticlesBg from "particles-bg";
 import LoadingScreen from "react-loading-screen";
 import Modal from "./components/Modal/Modal";
+import Profile from "./components/Profile/Profile";
 
 import "./App.css";
 
@@ -34,6 +35,7 @@ const initialState = {
 
 export default function App() {
   const [state, setState] = useState(initialState);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const loadUser = (data) => {
     setState((prevState) => ({
@@ -119,6 +121,10 @@ export default function App() {
     setState((prevState) => ({ ...prevState, route: route }));
   };
 
+  const toggleModal = () => {
+    setIsProfileOpen((prevState) => !prevState);
+  };
+
   const { isSignedIn, imageUrl, route, boxes } = state;
 
   return (
@@ -150,7 +156,16 @@ export default function App() {
           />
         }
       >
-        <Navigation isSignedIn={isSignedIn} onRouteChange={onRouteChange} />
+        <Navigation
+          isSignedIn={isSignedIn}
+          onRouteChange={onRouteChange}
+          toggleModal={toggleModal}
+        />
+        {isProfileOpen && (
+          <Modal>
+            <Profile isProfileOpen={isProfileOpen} toggleModal={toggleModal} />
+          </Modal>
+        )}
         {route === "home" ? (
           <div>
             <Logo />

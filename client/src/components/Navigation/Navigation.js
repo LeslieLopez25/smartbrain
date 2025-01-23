@@ -1,7 +1,7 @@
 import React from "react";
-import ProfileIcon from "../Profile/Profileicon";
+import ProfileIcon from "../Profile/ProfileIcon";
 
-export default function Navigation({ onRouteChange, isSignedIn }) {
+export default function Navigation({ onRouteChange, isSignedIn, toggleModal }) {
   if (isSignedIn) {
     return (
       <nav
@@ -10,7 +10,7 @@ export default function Navigation({ onRouteChange, isSignedIn }) {
           justifyContent: "flex-end",
         }}
       >
-        <ProfileIcon onRouteChange={onRouteChange} />
+        <ProfileIcon onRouteChange={onRouteChange} toggleModal={toggleModal} />
       </nav>
     );
   } else {
