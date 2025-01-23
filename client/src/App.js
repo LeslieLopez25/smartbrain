@@ -1,6 +1,7 @@
 import React, { useState, Suspense, lazy } from "react";
 import ParticlesBg from "particles-bg";
 import LoadingScreen from "react-loading-screen";
+import Modal from "./components/Modal/Modal";
 
 import "./App.css";
 
