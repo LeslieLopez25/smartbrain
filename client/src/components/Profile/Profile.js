@@ -1,7 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Profile.css";
 
-const Profile = ({ isProfileOpen, toggleModal, user }) => {
+export default function Profile({ isProfileOpen, toggleModal, user }) {
+  const [name, setName] = useState(user.name || "");
+  const [age, setAge] = useState(user.age || "");
+  const [pet, setPet] = useState(user.pet || "");
+
+  const onFormChange = (event) => {
+    const { name, value } = event.target;
+    switch (name) {
+      case "user-name":
+        setName(value);
+        break;
+      case "user-age":
+        setAge(value);
+        break;
+      case "user-pet":
+        setPet(value);
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <div className="profile-modal">
       <article className="br3 ba b--black-40 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center bg-navy">
@@ -11,7 +32,7 @@ const Profile = ({ isProfileOpen, toggleModal, user }) => {
             className="h3 w3 dib"
             alt="avatar"
           />
-          <h1>{user.name}</h1>
+          <h1>{name}</h1>
           <h4>{`Images Submitted: ${user.entries}`}</h4>
           <p>{`Member Since: ${new Date(user.joined).toLocaleDateString()}`}</p>
           <hr />
@@ -19,31 +40,37 @@ const Profile = ({ isProfileOpen, toggleModal, user }) => {
             Name:
           </label>
           <input
+            onChange={onFormChange}
             className="pa2 ba w-100"
             placeholder={user.name}
             type="text"
             name="user-name"
             id="name"
+            value={name}
           />
           <label className="mt2 fw6" htmlFor="user-age">
             Age:
           </label>
           <input
+            onChange={onFormChange}
             className="pa2 ba w-100"
             placeholder={user.age}
             type="text"
             name="user-age"
             id="age"
+            value={age}
           />
           <label className="mt2 fw6" htmlFor="user-pet">
             Pet:
           </label>
           <input
+            onChange={onFormChange}
             className="pa2 ba w-100"
             placeholder={user.pet}
             type="text"
             name="user-pet"
             id="pet"
+            value={pet}
           />
           <div
             className="mt4"
@@ -66,6 +93,4 @@ const Profile = ({ isProfileOpen, toggleModal, user }) => {
       </article>
     </div>
   );
-};
-
-export default Profile;
+}
