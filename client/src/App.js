@@ -30,6 +30,8 @@ const initialState = {
     email: "",
     entries: 0,
     joined: "",
+    pet: "",
+    age: "",
   },
 };
 
@@ -125,7 +127,7 @@ export default function App() {
     setIsProfileOpen((prevState) => !prevState);
   };
 
-  const { isSignedIn, imageUrl, route, boxes } = state;
+  const { isSignedIn, imageUrl, route, boxes, user } = state;
 
   return (
     <div className="App">
@@ -163,7 +165,11 @@ export default function App() {
         />
         {isProfileOpen && (
           <Modal>
-            <Profile isProfileOpen={isProfileOpen} toggleModal={toggleModal} />
+            <Profile
+              isProfileOpen={isProfileOpen}
+              toggleModal={toggleModal}
+              user={user}
+            />
           </Modal>
         )}
         {route === "home" ? (
