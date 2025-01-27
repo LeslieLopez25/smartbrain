@@ -19,7 +19,7 @@ export default function Signin({ loadUser, onRouteChange }) {
     setSignInData({ ...signInData, signInPassword: event.target.value });
   };
 
-  const onSubmitSignIn = () => {
+  const onSubmitSignIn = (data) => {
     setSignInData({ ...signInData, loading: true });
     fetch("https://facerecognitionbrain-api-ral3.onrender.com/signin", {
       method: "POST",
@@ -31,8 +31,8 @@ export default function Signin({ loadUser, onRouteChange }) {
     })
       .then((response) => response.json())
       .then((user) => {
-        if (user.id) {
-          loadUser(user);
+        if (data.userId) {
+          loadUser(data);
           onRouteChange("home");
         }
       })
