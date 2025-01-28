@@ -19,7 +19,6 @@ export default function Signin({ loadUser, onRouteChange }) {
     setSignInData({ ...signInData, signInPassword: event.target.value });
   };
 
-  // Changing backend link
   const onSubmitSignIn = (data) => {
     setSignInData({ ...signInData, loading: true });
     fetch("https://smartbrain-api-2mk1.onrender.com/signin", {
