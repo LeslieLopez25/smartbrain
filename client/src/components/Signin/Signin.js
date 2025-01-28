@@ -22,7 +22,7 @@ export default function Signin({ loadUser, onRouteChange }) {
   // Changing backend link
   const onSubmitSignIn = (data) => {
     setSignInData({ ...signInData, loading: true });
-    fetch("https://facerecognitionbrain-api-ral3.onrender.com/signin", {
+    fetch("https://smartbrain-api-2mk1.onrender.com/signin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

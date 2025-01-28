@@ -31,4 +31,5 @@ const handleProfileUpdate = (req, res, db) => {
 
 module.exports = {
   handleProfileGet,
+  handleProfileUpdate,
 };

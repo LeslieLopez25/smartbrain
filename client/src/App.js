@@ -80,7 +80,7 @@ export default function App() {
       ...prevState,
       imageUrl: prevState.input,
     }));
-    fetch("https://facerecognitionbrain-api-ral3.onrender.com/imageurl", {
+    fetch("https://smartbrain-api-2mk1.onrender.com/imageurl", {
       method: "post",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -90,7 +90,7 @@ export default function App() {
       .then((response) => response.json())
       .then((response) => {
         if (response) {
-          fetch("https://facerecognitionbrain-api-ral3.onrender.com/image", {
+          fetch("https://smartbrain-api-2mk1.onrender.com/image", {
             method: "put",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
