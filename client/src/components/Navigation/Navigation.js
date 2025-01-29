@@ -1,5 +1,5 @@
 import React from "react";
-import ProfileIcon from "../ProfileIcon/ProfileIcon";
+import ProfileIcon from "../Profile/ProfileIcon.js";
 
 export default function Navigation({ onRouteChange, isSignedIn, toggleModal }) {
   if (isSignedIn) {
