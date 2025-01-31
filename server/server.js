@@ -1,10 +1,8 @@
 const express = require("express");
-const bodyParser = require("body-parser");
+const bodyParser = require("body-parser"); // latest version of exressJS now comes with Body-Parser!
 const bcrypt = require("bcrypt-nodejs");
 const cors = require("cors");
 const knex = require("knex");
-require("dotenv").config();
-require("./utils/jobs");
 
 const register = require("./controllers/register");
 const signin = require("./controllers/signin");
@@ -28,18 +26,14 @@ app.get("/", (req, res) => {
   res.send(db.users);
 });
 
-app.post("/signin", signin.signinAuthentication(db, bcrypt));
+app.post("/signin", signin.handleSignin(db, bcrypt));
 
 app.post("/register", (req, res) => {
-  register.handleRegister(req, res, bcrypt, db);
+  register.handleRegister(req, res, db, bcrypt);
 });
 
 app.get("/profile/:id", (req, res) => {
   profile.handleProfileGet(req, res, db);
-});
-
-app.post("/profile/:id", (req, res) => {
-  profile.handleProfileUpdate(req, res, db);
 });
 
 app.put("/image", (req, res) => {
