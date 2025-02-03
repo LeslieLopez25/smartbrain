@@ -81,7 +81,7 @@ export default function App() {
       imageUrl: prevState.input,
     }));
     fetch("https://smartbrain-api-2mk1.onrender.com/imageurl", {
-      method: "post",
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         input: state.input,
@@ -91,7 +91,7 @@ export default function App() {
       .then((response) => {
         if (response) {
           fetch("https://smartbrain-api-2mk1.onrender.com/image", {
-            method: "put",
+            method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               id: state.user.id,

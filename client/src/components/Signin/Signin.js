@@ -23,7 +23,7 @@ export default function Signin({ loadUser, onRouteChange }) {
     setSignInData((prev) => ({ ...prev, loading: true }));
 
     fetch("https://smartbrain-api-2mk1.onrender.com/signin", {
-      method: "post",
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: signInEmail,
