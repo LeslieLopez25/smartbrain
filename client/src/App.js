@@ -1,8 +1,11 @@
-import React, { useState, Suspense, lazy } from "react";
+import React, { Suspense, lazy } from "react";
 import ParticlesBg from "particles-bg";
 import LoadingScreen from "react-loading-screen";
 import Modal from "./components/Modal/Modal";
 import Profile from "./components/Profile/Profile";
+import AuthProvider from "./auth/auth0Provider";
+import useAuth from "./auth/useAuth";
+import { API_URL } from "./config";
 
 import "./App.css";
 
@@ -15,47 +18,21 @@ const ImageLinkForm = lazy(() =>
   import("./components/ImageLinkForm/ImageLinkForm")
 );
 const Rank = lazy(() => import("./components/Rank/Rank"));
-const SignIn = lazy(() => import("./components/Signin/Signin"));
-const Register = lazy(() => import("./components/Register/Register"));
-
-const initialState = {
-  input: "",
-  imageUrl: "",
-  boxes: [],
-  route: "signin",
-  isSignedIn: false,
-  user: {
-    id: "",
-    name: "",
-    email: "",
-    entries: 0,
-    joined: "",
-    pet: "",
-    age: "",
-  },
-};
 
 export default function App() {
-  const [state, setState] = useState(initialState);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const [imageUrl, setImageUrl] = React.useState("");
+  const [boxes, setBoxes] = React.useState([]);
+  const [isProfileOpen, setIsProfileOpen] = React.useState(false);
 
-  const loadUser = (data) => {
-    setState((prevState) => ({
-      ...prevState,
-      user: {
-        id: data.id,
-        name: data.name,
-        email: data.email,
-        entries: data.entries,
-        joined: data.joined,
-      },
-    }));
-  };
-
+  // Function to calculate face location from API response
   const calculateFaceLocation = (data) => {
     const image = document.getElementById("inputimage");
+    if (!image) return [];
+
     const width = Number(image.width);
     const height = Number(image.height);
+
     return data.outputs[0].data.regions.map((face) => {
       const clarifaiFace = face.region_info.bounding_box;
       return {
@@ -67,127 +44,82 @@ export default function App() {
     });
   };
 
-  const displayFaceBox = (boxes) => {
-    setState((prevState) => ({ ...prevState, boxes: boxes }));
-  };
-
   const onInputChange = (event) => {
-    setState((prevState) => ({ ...prevState, input: event.target.value }));
+    setImageUrl(event.target.value);
   };
 
-  const onButtonSubmit = () => {
-    setState((prevState) => ({
-      ...prevState,
-      imageUrl: prevState.input,
-    }));
-    fetch("https://smartbrain-api-2mk1.onrender.com/imageurl", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        input: state.input,
-      }),
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        if (response) {
-          fetch("https://smartbrain-api-2mk1.onrender.com/image", {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              id: state.user.id,
-            }),
-          })
-            .then((response) => response.json())
-            .then((count) => {
-              setState((prevState) => ({
-                ...prevState,
-                user: {
-                  ...prevState.user,
-                  entries: count,
-                },
-              }));
-            })
-            .catch(console.log);
-        }
-        displayFaceBox(calculateFaceLocation(response));
-      })
-      .catch((err) => console.log(err));
-  };
+  const onImageSubmit = async () => {
+    try {
+      const response = await fetch(`${API_URL}/image`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl }),
+      });
+      if (!response.ok) throw new Error("Failed to fetch");
 
-  const onRouteChange = (route) => {
-    if (route === "signout") {
-      return setState(initialState);
-    } else if (route === "home") {
-      setState((prevState) => ({ ...prevState, isSignedIn: true }));
+      const data = await response.json();
+      setBoxes(calculateFaceLocation(data));
+    } catch (error) {
+      console.error("Error detecting faces:", error);
     }
-    setState((prevState) => ({ ...prevState, route: route }));
   };
 
   const toggleModal = () => {
-    setIsProfileOpen((prevState) => !prevState);
+    setIsProfileOpen((prev) => !prev);
   };
 
-  const { isSignedIn, imageUrl, route, boxes, user } = state;
+  if (isLoading) {
+    return (
+      <LoadingScreen loading={true} bgColor="transparent" text="Loading..." />
+    );
+  }
 
   return (
-    <div className="App">
-      <ParticlesBg
-        class="particles-bg-canvas-self"
-        type="thick"
-        bg={{
-          position: "fixed",
-          height: "100%",
-          width: "100%",
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          zIndex: -1,
-        }}
-      />
-      <Suspense
-        fallback={
-          <LoadingScreen
-            loading={true}
-            bgColor="transparent"
-            spinnerColor="#ffffff"
-            textColor="#ffffff"
-            logoSrc=""
-            text="Loading..."
-            className="text-xl w-fit mx-auto backdrop-blur-sm"
-          />
-        }
-      >
-        <Navigation
-          isSignedIn={isSignedIn}
-          onRouteChange={onRouteChange}
-          toggleModal={toggleModal}
+    <AuthProvider>
+      <div className="App">
+        <ParticlesBg
+          type="thick"
+          bg={{ position: "fixed", height: "100%", width: "100%" }}
         />
-        {isProfileOpen && (
-          <Modal>
-            <Profile
-              isProfileOpen={isProfileOpen}
-              toggleModal={toggleModal}
-              user={user}
+        <Suspense
+          fallback={
+            <LoadingScreen
+              loading={true}
+              bgColor="transparent"
+              spinnerColor="#ffffff"
+              textColor="#ffffff"
+              logoSrc=""
+              text="Loading..."
+              className="text-xl w-fit mx-auto backdrop-blur-sm"
             />
-          </Modal>
-        )}
-        {route === "home" ? (
-          <div>
-            <Logo />
-            <Rank name={state.user.name} entries={state.user.entries} />
-            <ImageLinkForm
-              onInputChange={onInputChange}
-              onButtonSubmit={onButtonSubmit}
-            />
-            <FaceRecognition boxes={boxes} imageUrl={imageUrl} />
-          </div>
-        ) : route === "signin" ? (
-          <SignIn loadUser={loadUser} onRouteChange={onRouteChange} />
-        ) : (
-          <Register loadUser={loadUser} onRouteChange={onRouteChange} />
-        )}
-      </Suspense>
-    </div>
+          }
+        >
+          <Navigation
+            isAuthenticated={isAuthenticated}
+            toggleModal={toggleModal}
+          />
+          {isProfileOpen && (
+            <Modal>
+              <Profile toggleModal={toggleModal} user={user} />
+            </Modal>
+          )}
+          {isAuthenticated ? (
+            <>
+              <Logo />
+              <Rank name={user?.name} />
+              <ImageLinkForm
+                onInputChange={onInputChange}
+                onImageSubmit={onImageSubmit}
+              />
+              <FaceRecognition boxes={boxes} imageUrl={imageUrl} />
+            </>
+          ) : (
+            <div className="center">
+              <h2>Please log in to use the app</h2>
+            </div>
+          )}
+        </Suspense>
+      </div>
+    </AuthProvider>
   );
 }
