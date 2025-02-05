@@ -8,22 +8,25 @@ const app = new Clarifai.App({
 const handleApiCall = (req, res) => {
   app.models
     .predict("face-detection", req.body.input)
-    .then((data) => {
-      res.json(data);
-    })
-    .catch((err) => res.status(400).json("unable to work with API"));
+    .then((data) => res.json(data))
+    .catch((err) => res.status(400).json("Unable to work with API"));
 };
 
 const handleImage = (req, res, db) => {
-  const { id } = req.body;
+  const auth0_id = req.auth.sub;
+
   db("users")
-    .where("id", "=", id)
+    .where({ auth0_id })
     .increment("entries", 1)
     .returning("entries")
     .then((entries) => {
-      res.json(entries[0].entries);
+      if (entries.length) {
+        res.json(entries[0].entries);
+      } else {
+        res.status(404).json("User not found");
+      }
     })
-    .catch((err) => res.status(400).json("unable to get entries"));
+    .catch((err) => res.status(500).json("Unable to update entries"));
 };
 
 module.exports = {

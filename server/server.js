@@ -1,12 +1,7 @@
 const express = require("express");
-const bodyParser = require("body-parser"); // latest version of exressJS now comes with Body-Parser!
-const bcrypt = require("bcrypt-nodejs");
 const cors = require("cors");
 const knex = require("knex");
-const checkJwt = require("./auth");
-
-const register = require("./controllers/register");
-const signin = require("./controllers/signin");
+const { checkJwt } = require("./auth");
 const profile = require("./controllers/profile");
 const image = require("./controllers/image");
 
@@ -19,34 +14,26 @@ const db = knex({
 });
 
 const app = express();
-const router = express.Router();
-
 app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send(db.users);
+  res.send("Server is running");
 });
 
-app.post("/signin", signin.signinAuthentication(db, bcrypt));
-
-app.post("/register", (req, res) => {
-  register.handleRegister(req, res, db, bcrypt);
-});
-
-app.get("/profile/:id", (req, res) => {
+app.get("/profile", checkJwt, (req, res) => {
   profile.handleProfileGet(req, res, db);
 });
 
-router.get("/profile", checkJwt, (req, res) => {
-  res.json({ message: "This is a protected route", user: req.auth });
+app.put("/profile", checkJwt, (req, res) => {
+  profile.handleProfileUpdate(req, res, db);
 });
 
-app.put("/image", (req, res) => {
+app.put("/image", checkJwt, (req, res) => {
   image.handleImage(req, res, db);
 });
 
-app.post("/imageurl", (req, res) => {
+app.post("/imageurl", checkJwt, (req, res) => {
   image.handleApiCall(req, res);
 });
 
