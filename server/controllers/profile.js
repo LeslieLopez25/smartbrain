@@ -1,32 +1,35 @@
 const handleProfileGet = (req, res, db) => {
-  const { id } = req.params;
+  const auth0_id = req.auth.sub;
+
   db.select("*")
     .from("users")
-    .where({ id })
+    .where({ auth0_id })
     .then((user) => {
       if (user.length) {
         res.json(user[0]);
       } else {
-        res.status(400).json("Not found");
+        res.status(400).json("User not found");
       }
     })
-    .catch((err) => res.status(400).json("error getting user"));
+    .catch((err) => res.status(400).json("Error getting user"));
 };
 
 const handleProfileUpdate = (req, res, db) => {
-  const { id } = req.params;
-  const { name, age, pet } = req.body.formInput;
+  const auth0_id = req.auth.sub;
+  const { name, age, pet } = req.body;
+
   db("users")
-    .where({ id })
-    .update({ name })
-    .then((resp) => {
-      if (resp) {
-        res.json("success");
+    .where({ auth0_id })
+    .update({ name, age, pet })
+    .returning("*")
+    .then((updatedUser) => {
+      if (updatedUser.length) {
+        res.json(updatedUser[0]);
       } else {
-        res.status(404).json("Unable to update");
+        res.status(404).json("Unable to update profile");
       }
     })
-    .catch((err) => res.status(400).json("error updating user"));
+    .catch((err) => res.status(400).json("Error updating user"));
 };
 
 module.exports = {
