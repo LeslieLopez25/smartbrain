@@ -1,7 +1,8 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const knex = require("knex");
-const { checkJwt } = require("./auth");
+const checkJwt = require("./auth/authMiddleware");
 const profile = require("./controllers/profile");
 const image = require("./controllers/image");
 

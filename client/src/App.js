@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { useState, Suspense, lazy } from "react";
 import ParticlesBg from "particles-bg";
 import LoadingScreen from "react-loading-screen";
 import Modal from "./components/Modal/Modal";
@@ -21,9 +21,10 @@ const Rank = lazy(() => import("./components/Rank/Rank"));
 
 export default function App() {
   const { user, isAuthenticated, isLoading } = useAuth();
-  const [imageUrl, setImageUrl] = React.useState("");
-  const [boxes, setBoxes] = React.useState([]);
-  const [isProfileOpen, setIsProfileOpen] = React.useState(false);
+  const [imageUrl, setImageUrl] = useState("");
+  const [boxes, setBoxes] = useState([]);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [entries, setEntries] = useState(0);
 
   // Function to calculate face location from API response
   const calculateFaceLocation = (data) => {
@@ -33,8 +34,13 @@ export default function App() {
     const width = Number(image.width);
     const height = Number(image.height);
 
+    if (!data.outputs || !data.outputs[0].data.regions) {
+      return [];
+    }
+
     return data.outputs[0].data.regions.map((face) => {
       const clarifaiFace = face.region_info.bounding_box;
+
       return {
         leftCol: clarifaiFace.left_col * width,
         topRow: clarifaiFace.top_row * height,
@@ -50,17 +56,63 @@ export default function App() {
 
   const onImageSubmit = async () => {
     try {
-      const response = await fetch(`${API_URL}/image`, {
+      const response = await fetch(`${API_URL}/imageurl`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl }),
+        body: JSON.stringify({ input: imageUrl }),
       });
       if (!response.ok) throw new Error("Failed to fetch");
 
       const data = await response.json();
-      setBoxes(calculateFaceLocation(data));
+
+      const calculatedBoxes = calculateFaceLocation(data);
+
+      setBoxes(calculatedBoxes);
+
+      // Update entries count
+      const entriesResponse = await fetch(`${API_URL}/image`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ auth0_id: user?.sub }),
+      });
+
+      if (!entriesResponse.ok) throw new Error("Failed to update entries");
+
+      const entriesData = await entriesResponse.json();
+
+      if (entriesData.entries !== undefined) {
+        setEntries(entriesData.entries);
+      } else {
+        console.warn("Entries field missing in response:", entriesData);
+      }
     } catch (error) {
       console.error("Error detecting faces:", error);
+    }
+  };
+
+  const onButtonSubmit = async () => {
+    if (!imageUrl) {
+      console.warn("No image URL provided!");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/imageurl`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ input: imageUrl }),
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch");
+
+      const data = await response.json();
+
+      const calculatedBoxes = calculateFaceLocation(data);
+      setBoxes(calculatedBoxes);
+    } catch (error) {
+      console.error("Error in face detection:", error);
     }
   };
 
@@ -116,10 +168,11 @@ export default function App() {
           {isAuthenticated ? (
             <>
               <Logo />
-              <Rank name={user?.name} />
+              <Rank name={user?.name} entries={entries} />
               <ImageLinkForm
                 onInputChange={onInputChange}
                 onImageSubmit={onImageSubmit}
+                onButtonSubmit={onButtonSubmit}
               />
               <FaceRecognition boxes={boxes} imageUrl={imageUrl} />
             </>

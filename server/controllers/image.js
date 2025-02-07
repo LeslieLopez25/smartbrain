@@ -13,20 +13,20 @@ const handleApiCall = (req, res) => {
 };
 
 const handleImage = (req, res, db) => {
-  const auth0_id = req.auth.sub;
+  const { auth0_id } = req.body; // Use auth0_id
 
   db("users")
-    .where({ auth0_id })
+    .where({ auth0_id }) // Find user by auth0_id
     .increment("entries", 1)
     .returning("entries")
     .then((entries) => {
       if (entries.length) {
-        res.json(entries[0].entries);
+        res.json({ entries: entries[0] });
       } else {
-        res.status(404).json("User not found");
+        res.status(400).json("User not found");
       }
     })
-    .catch((err) => res.status(500).json("Unable to update entries"));
+    .catch((err) => res.status(400).json("Unable to get entries"));
 };
 
 module.exports = {
