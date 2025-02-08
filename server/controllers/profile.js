@@ -32,21 +32,27 @@ const handleProfile = async (req, res, db) => {
   }
 };
 
-const handleProfileGet = (req, res, db) => {
-  const auth0_id = req.auth.sub;
+const handleProfileGet = async (req, res, db) => {
+  try {
+    const auth0_id = req.auth?.sub;
 
-  db.select("*")
-    .from("users")
-    .where({ auth0_id })
-    .then((user) => {
-      if (user.length) {
-        res.json(user[0]);
-      } else {
-        res.status(400).json("User not found");
-      }
-    })
-    .catch((err) => res.status(400).json("Error getting user"));
+    if (!auth0_id) {
+      return res.status(400).json("Authentication required");
+    }
+
+    const user = await db("users").where({ auth0_id }).first();
+
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).json("User not found");
+    }
+  } catch (err) {
+    console.error("Error retrieving user profile:", err);
+    res.status(500).json("Error getting user");
+  }
 };
+
 
 const handleProfileUpdate = (req, res, db) => {
   const auth0_id = req.auth.sub;

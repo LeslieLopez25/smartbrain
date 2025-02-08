@@ -1,10 +1,11 @@
-import React, { useState, Suspense, lazy } from "react";
+import React, { useState, Suspense, lazy, useEffect } from "react";
 import ParticlesBg from "particles-bg";
 import LoadingScreen from "react-loading-screen";
 import Modal from "./components/Modal/Modal";
 import Profile from "./components/Profile/Profile";
 import AuthProvider from "./auth/auth0Provider";
 import useAuth from "./auth/useAuth";
+import axios from "axios";
 import { API_URL } from "./config";
 
 import "./App.css";
@@ -20,11 +21,31 @@ const ImageLinkForm = lazy(() =>
 const Rank = lazy(() => import("./components/Rank/Rank"));
 
 export default function App() {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
+    useAuth();
   const [imageUrl, setImageUrl] = useState("");
   const [boxes, setBoxes] = useState([]);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [entries, setEntries] = useState(0);
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (isAuthenticated && user) {
+        try {
+          const token = await getAccessTokenSilently();
+          const response = await axios.get(`${API_URL}/profile`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setUserData(response.data);
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+        }
+      }
+    };
+
+    fetchUserProfile();
+  }, [isAuthenticated, user, getAccessTokenSilently]);
 
   // Function to calculate face location from API response
   const calculateFaceLocation = (data) => {
@@ -162,7 +183,7 @@ export default function App() {
           />
           {isProfileOpen && (
             <Modal>
-              <Profile toggleModal={toggleModal} user={user} />
+              <Profile toggleModal={toggleModal} user={userData} />
             </Modal>
           )}
           {isAuthenticated ? (
