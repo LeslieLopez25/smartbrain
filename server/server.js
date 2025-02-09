@@ -5,14 +5,8 @@ const knex = require("knex");
 const checkJwt = require("./auth/authMiddleware");
 const profile = require("./controllers/profile");
 const image = require("./controllers/image");
-
-const db = knex({
-  client: "pg",
-  connection: {
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-  },
-});
+const { handleAuthUser } = require("./controllers/userController");
+const db = require("./db");
 
 const app = express();
 app.use(cors());
@@ -21,6 +15,8 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Server is running");
 });
+
+app.get("/auth/user", checkJwt, handleAuthUser);
 
 app.get("/profile", checkJwt, (req, res) => {
   profile.handleProfileGet(req, res, db);

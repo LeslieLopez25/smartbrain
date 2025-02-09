@@ -4,7 +4,7 @@ import LoadingScreen from "react-loading-screen";
 import Modal from "./components/Modal/Modal";
 import Profile from "./components/Profile/Profile";
 import AuthProvider from "./auth/auth0Provider";
-import useAuth from "./auth/useAuth";
+import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import { API_URL } from "./config";
 
@@ -22,7 +22,7 @@ const Rank = lazy(() => import("./components/Rank/Rank"));
 
 export default function App() {
   const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
-    useAuth();
+    useAuth0();
   const [imageUrl, setImageUrl] = useState("");
   const [boxes, setBoxes] = useState([]);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -33,10 +33,12 @@ export default function App() {
     const fetchUserProfile = async () => {
       if (isAuthenticated && user) {
         try {
+          console.log("Fetching profile for:", user.sub);
           const token = await getAccessTokenSilently();
           const response = await axios.get(`${API_URL}/profile`, {
             headers: { Authorization: `Bearer ${token}` },
           });
+          console.log("Profile response:", response.data);
           setUserData(response.data);
         } catch (error) {
           console.error("Error fetching user profile:", error);
@@ -138,7 +140,10 @@ export default function App() {
   };
 
   const toggleModal = () => {
-    setIsProfileOpen((prev) => !prev);
+    setIsProfileOpen((prev) => {
+      console.log("Profile Modal Toggled:", !prev);
+      return !prev;
+    });
   };
 
   if (isLoading) {
@@ -181,7 +186,7 @@ export default function App() {
             isAuthenticated={isAuthenticated}
             toggleModal={toggleModal}
           />
-          {isProfileOpen && (
+          {isProfileOpen && userData && (
             <Modal>
               <Profile toggleModal={toggleModal} user={userData} />
             </Modal>
