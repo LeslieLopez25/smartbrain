@@ -1,7 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+
 import "./ImageLinkForm.css";
 
 export default function ImageLinkForm({ onInputChange, onButtonSubmit }) {
+  const [input, setInput] = useState("");
+
+  const handleChange = (event) => {
+    setInput(event.target.value);
+    onInputChange(event);
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter" && input.trim()) {
+      onButtonSubmit();
+    }
+  };
+
   return (
     <div>
       <p className="image-link-form-text">
@@ -12,9 +27,17 @@ export default function ImageLinkForm({ onInputChange, onButtonSubmit }) {
           <input
             className="image-link-form-input"
             type="text"
-            onChange={onInputChange}
+            value={input}
+            onChange={handleChange}
+            onKeyDown={handleKeyPress}
+            placeholder="Enter image URL"
+            aria-label="Image URL input field"
           />
-          <button className="image-link-form-button" onClick={onButtonSubmit}>
+          <button
+            className="image-link-form-button"
+            onClick={onButtonSubmit}
+            disabled={!input.trim()}
+          >
             Detect
           </button>
         </div>
@@ -22,3 +45,8 @@ export default function ImageLinkForm({ onInputChange, onButtonSubmit }) {
     </div>
   );
 }
+
+ImageLinkForm.propTypes = {
+  onInputChange: PropTypes.func.isRequired,
+  onButtonSubmit: PropTypes.func.isRequired,
+};
