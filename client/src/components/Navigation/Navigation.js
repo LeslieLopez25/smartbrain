@@ -10,22 +10,22 @@ export default function Navigation({ toggleModal }) {
       {isAuthenticated ? (
         <>
           <ProfileImage toggleModal={toggleModal} />
-          <p
+          <button
             onClick={() => logout({ returnTo: window.location.origin })}
             className="f3 link dim white underline pa3 pointer"
+            aria-label="Sign out"
           >
             Sign Out
-          </p>
+          </button>
         </>
       ) : (
-        <>
-          <p
-            onClick={() => loginWithRedirect()}
-            className="f3 link dim white underline pa3 pointer"
-          >
-            Sign In
-          </p>
-        </>
+        <button
+          onClick={() => loginWithRedirect()}
+          className="f3 link dim white underline pa3 pointer"
+          aria-label="Sign in"
+        >
+          Sign In
+        </button>
       )}
     </nav>
   );
