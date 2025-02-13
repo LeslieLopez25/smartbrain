@@ -1,17 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import { API_URL } from "../../config";
+
 import "./Profile.css";
 
-export default function Profile({ toggleModal, user }) {
+export default function Profile({ toggleModal, user = {} }) {
   const { getAccessTokenSilently } = useAuth0();
-  const [name, setName] = useState(user.name || "");
-  const [age, setAge] = useState(user.age || "");
-  const [pet, setPet] = useState(user.pet || "");
+
+  const [name, setName] = useState(user?.name || "");
+  const [age, setAge] = useState(user?.age || "");
+  const [pet, setPet] = useState(user?.pet || "");
   const [loading, setLoading] = useState(false);
 
-  const saveProfile = async () => {
+  const saveProfile = useCallback(async () => {
     try {
       setLoading(true);
       const token = await getAccessTokenSilently();
@@ -27,7 +29,7 @@ export default function Profile({ toggleModal, user }) {
       );
 
       if (response.status === 200) {
-        console.log("Profile update successfully:", response.data);
+        console.log("Profile updated successfully:", response.data);
         toggleModal();
       } else {
         console.error("Failed to update profile");
@@ -37,7 +39,7 @@ export default function Profile({ toggleModal, user }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [name, age, pet, getAccessTokenSilently, toggleModal]);
 
   return (
     <div className="profile-modal">
@@ -48,9 +50,11 @@ export default function Profile({ toggleModal, user }) {
             className="h3 w3 dib"
             alt="avatar"
           />
-          <h1>{name}</h1>
-          <h4>{`Images Submitted: ${user.entries}`}</h4>
-          <p>{`Member Since: ${new Date(user.joined).toLocaleDateString()}`}</p>
+          <h1>{name || "Your Name"}</h1>
+          <h4>{`Images Submitted: ${user?.entries || 0}`}</h4>
+          <p>{`Member Since: ${
+            user?.joined ? new Date(user.joined).toLocaleDateString() : "N/A"
+          }`}</p>
           <hr />
           <label className="mt2 fw6" htmlFor="user-name">
             Name:
@@ -58,7 +62,7 @@ export default function Profile({ toggleModal, user }) {
           <input
             onChange={(e) => setName(e.target.value)}
             className="pa2 ba w-100"
-            placeholder={user.name}
+            placeholder="Enter your name"
             type="text"
             name="user-name"
             id="name"
@@ -70,7 +74,7 @@ export default function Profile({ toggleModal, user }) {
           <input
             onChange={(e) => setAge(e.target.value)}
             className="pa2 ba w-100"
-            placeholder={user.age}
+            placeholder="Enter your age"
             type="number"
             name="user-age"
             id="age"
@@ -82,7 +86,7 @@ export default function Profile({ toggleModal, user }) {
           <input
             onChange={(e) => setPet(e.target.value)}
             className="pa2 ba w-100"
-            placeholder={user.pet}
+            placeholder="Enter your pet's name"
             type="text"
             name="user-pet"
             id="pet"
