@@ -9,6 +9,7 @@ import {
 export default function ProfileImage({
   onRouteChange,
   toggleModal,
+  userImage = "http://tachyons.io/img/logo.jpg",
   direction = "down",
   ...args
 }) {
@@ -19,11 +20,15 @@ export default function ProfileImage({
   return (
     <div className="pa3 tc">
       <Dropdown isOpen={dropdownOpen} toggle={toggle} direction={direction}>
-        <DropdownToggle data-toggle="dropdown" tag="span">
+        <DropdownToggle
+          data-toggle="dropdown"
+          tag="button"
+          className="bg-transparent bn"
+        >
           <img
-            src="http://tachyons.io/img/logo.jpg"
+            src={userImage}
             className="br-100 pa1 ba b--black-10 h3 w3"
-            alt="avatar"
+            alt="User Avatar"
           />
         </DropdownToggle>
         <DropdownMenu
@@ -32,7 +37,7 @@ export default function ProfileImage({
           className="b--transparent shadow-5"
           style={{
             marginTop: "20px",
-            backgroundColor: "rgba(255,255,255, 0.5)",
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
           }}
         >
           <DropdownItem onClick={toggleModal}>View Profile</DropdownItem>
