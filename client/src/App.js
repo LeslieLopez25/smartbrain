@@ -3,7 +3,6 @@ import ParticlesBg from "particles-bg";
 import LoadingScreen from "react-loading-screen";
 import Modal from "./components/Modal/Modal";
 import Profile from "./components/Profile/Profile";
-import AuthProvider from "./auth/auth0Provider";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import { API_URL } from "./config";
@@ -57,20 +56,17 @@ export default function App() {
     const width = Number(image.width);
     const height = Number(image.height);
 
-    if (!data.outputs || !data.outputs[0].data.regions) {
-      return [];
-    }
-
-    return data.outputs[0].data.regions.map((face) => {
-      const clarifaiFace = face.region_info.bounding_box;
-
-      return {
-        leftCol: clarifaiFace.left_col * width,
-        topRow: clarifaiFace.top_row * height,
-        rightCol: width - clarifaiFace.right_col * width,
-        bottomRow: height - clarifaiFace.bottom_row * height,
-      };
-    });
+    return (
+      data?.outputs?.[0]?.data?.regions?.map((face) => {
+        const clarifaiFace = face.region_info.bounding_box;
+        return {
+          leftCol: clarifaiFace.left_col * width,
+          topRow: clarifaiFace.top_row * height,
+          rightCol: width - clarifaiFace.right_col * width,
+          bottomRow: height - clarifaiFace.bottom_row * height,
+        };
+      }) || []
+    );
   };
 
   const onInputChange = (event) => {
@@ -81,17 +77,14 @@ export default function App() {
     try {
       const response = await fetch(`${API_URL}/imageurl`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ input: imageUrl }),
-        credentials: "include", // Add this line
       });
 
       if (!response.ok) throw new Error("Failed to fetch");
       const data = await response.json();
-      const calculatedBoxes = calculateFaceLocation(data);
-      setBoxes(calculatedBoxes);
+      setBoxes(calculateFaceLocation(data));
+
       // Update entries count
       const entriesResponse = await fetch(`${API_URL}/image`, {
         method: "PUT",
@@ -102,40 +95,9 @@ export default function App() {
       if (!entriesResponse.ok) throw new Error("Failed to update entries");
 
       const entriesData = await entriesResponse.json();
-
-      if (entriesData.entries !== undefined) {
-        setEntries(entriesData.entries);
-      } else {
-        console.warn("Entries field missing in response:", entriesData);
-      }
+      setEntries(entriesData.entries ?? entries);
     } catch (error) {
       console.error("Error detecting faces:", error);
-    }
-  };
-
-  const onButtonSubmit = async () => {
-    if (!imageUrl) {
-      console.warn("No image URL provided!");
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_URL}/imageurl`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ input: imageUrl }),
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch");
-
-      const data = await response.json();
-
-      const calculatedBoxes = calculateFaceLocation(data);
-      setBoxes(calculatedBoxes);
-    } catch (error) {
-      console.error("Error in face detection:", error);
     }
   };
 
@@ -153,62 +115,59 @@ export default function App() {
   }
 
   return (
-    <AuthProvider>
-      <div className="App">
-        <ParticlesBg
-          class="particles-bg-canvas-self"
-          type="thick"
-          bg={{
-            position: "fixed",
-            height: "100%",
-            width: "100%",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            zIndex: -1,
-          }}
-        />
-        <Suspense
-          fallback={
-            <LoadingScreen
-              loading={true}
-              bgColor="transparent"
-              spinnerColor="#ffffff"
-              textColor="#ffffff"
-              logoSrc=""
-              text="Loading..."
-              className="text-xl w-fit mx-auto backdrop-blur-sm"
-            />
-          }
-        >
-          <Navigation
-            isAuthenticated={isAuthenticated}
-            toggleModal={toggleModal}
+    <div className="App">
+      <ParticlesBg
+        class="particles-bg-canvas-self"
+        type="thick"
+        bg={{
+          position: "fixed",
+          height: "100%",
+          width: "100%",
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          zIndex: -1,
+        }}
+      />
+      <Suspense
+        fallback={
+          <LoadingScreen
+            loading={true}
+            bgColor="transparent"
+            spinnerColor="#ffffff"
+            textColor="#ffffff"
+            logoSrc=""
+            text="Loading..."
+            className="text-xl w-fit mx-auto backdrop-blur-sm"
           />
-          {isProfileOpen && userData && (
-            <Modal>
-              <Profile toggleModal={toggleModal} user={userData} />
-            </Modal>
-          )}
-          {isAuthenticated ? (
-            <>
-              <Logo />
-              <Rank name={user?.name} entries={entries} />
-              <ImageLinkForm
-                onInputChange={onInputChange}
-                onImageSubmit={onImageSubmit}
-                onButtonSubmit={onButtonSubmit}
-              />
-              <FaceRecognition boxes={boxes} imageUrl={imageUrl} />
-            </>
-          ) : (
-            <div className="center">
-              <h2>Please log in to use the app</h2>
-            </div>
-          )}
-        </Suspense>
-      </div>
-    </AuthProvider>
+        }
+      >
+        <Navigation
+          isAuthenticated={isAuthenticated}
+          toggleModal={toggleModal}
+        />
+        {isProfileOpen && userData && (
+          <Modal>
+            <Profile toggleModal={toggleModal} user={userData} />
+          </Modal>
+        )}
+        {isAuthenticated ? (
+          <>
+            <Logo />
+            <Rank name={user?.name} entries={entries} />
+            <ImageLinkForm
+              onInputChange={onInputChange}
+              onImageSubmit={onImageSubmit}
+            />
+            <FaceRecognition boxes={boxes} imageUrl={imageUrl} />
+          </>
+        ) : (
+          <div className="center">
+            <h2>Please log in to use the app</h2>
+          </div>
+        )}
+      </Suspense>
+    </div>
   );
 }
