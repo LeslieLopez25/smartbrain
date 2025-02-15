@@ -1,22 +1,24 @@
 const handleProfile = async (req, res, db) => {
-  const { name, email, sub } = req.body; // `sub` is the Auth0 user ID (auth0_id)
+  const { name, email, sub } = req.body;
 
   if (!email || !sub) {
     return res.status(400).json("Missing required fields");
   }
 
   try {
-    // Check if user already exists
     const existingUser = await db("users").where({ auth0_id: sub }).first();
 
     if (!existingUser) {
-      // Insert new user into the database
       const newUser = await db("users")
         .insert({
           name,
           email,
           auth0_id: sub,
           entries: 0,
+          age: null,
+          pet: null,
+          favorite_food: null,
+          profile_image: null,
           joined: new Date(),
         })
         .returning("*");
@@ -24,7 +26,6 @@ const handleProfile = async (req, res, db) => {
       return res.json(newUser[0]);
     }
 
-    // If user already exists, return their data
     res.json(existingUser);
   } catch (err) {
     console.error("Error handling profile:", err);
@@ -53,23 +54,25 @@ const handleProfileGet = async (req, res, db) => {
   }
 };
 
+const handleProfileUpdate = async (req, res, db) => {
+  const auth0_id = req.auth?.sub;
+  const { name, age, pet, favorite_food, profile_image } = req.body;
 
-const handleProfileUpdate = (req, res, db) => {
-  const auth0_id = req.auth.sub;
-  const { name, age, pet } = req.body;
+  try {
+    const updatedUser = await db("users")
+      .where({ auth0_id })
+      .update({ name, age, pet, favorite_food, profile_image })
+      .returning("*");
 
-  db("users")
-    .where({ auth0_id })
-    .update({ name, age, pet })
-    .returning("*")
-    .then((updatedUser) => {
-      if (updatedUser.length) {
-        res.json(updatedUser[0]);
-      } else {
-        res.status(404).json("Unable to update profile");
-      }
-    })
-    .catch((err) => res.status(400).json("Error updating user"));
+    if (updatedUser.length) {
+      res.json(updatedUser[0]);
+    } else {
+      res.status(404).json("Unable to update profile");
+    }
+  } catch (err) {
+    console.error("Error updating user profile:", err);
+    res.status(500).json("Error updating user");
+  }
 };
 
 module.exports = {
