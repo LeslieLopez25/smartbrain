@@ -15,7 +15,7 @@ export default function Navigation({ toggleModal, user }) {
           />
           <button
             onClick={() => logout({ returnTo: window.location.origin })}
-            className="f3 link dim white underline pa3 pointer"
+            className="f3 link rounded dim pa3 pointer"
             aria-label="Sign out"
           >
             Sign Out
@@ -24,7 +24,7 @@ export default function Navigation({ toggleModal, user }) {
       ) : (
         <button
           onClick={() => loginWithRedirect()}
-          className="f3 link dim white underline pa3 pointer"
+          className="f3 link rounded dim pa3 pointer"
           aria-label="Sign in"
         >
           Sign In
