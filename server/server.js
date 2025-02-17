@@ -17,7 +17,15 @@ const db = knex({
 
 const app = express();
 
-app.use(cors());
+const cors = require("cors");
+
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://smartbrain-mtf1.onrender.com"],
+    allowedHeaders: ["Authorization", "Content-Type"],
+  })
+);
+
 app.use(express.json());
 
 app.get("/", (req, res) => res.send("Server is running"));
