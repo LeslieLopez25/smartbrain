@@ -29,26 +29,12 @@ export default function App() {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    if (!isAuthenticated || !user) {
-      console.warn(
-        "Auth0: User is not authenticated or user object is missing."
-      );
-      return;
-    }
-
     const fetchUserProfile = async () => {
       try {
         console.log("Fetching profile for:", user.sub);
 
         const token = await getAccessTokenSilently();
         console.log("Auth0 Token Retrieved:", token);
-
-        if (!token) {
-          console.error("Auth0 Token is missing!");
-          return;
-        }
-
-        console.log("Sending token in request:", `Bearer ${token}`);
 
         const response = await axios.get(`${API_URL}/profile`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -64,10 +50,7 @@ export default function App() {
       }
     };
 
-    // Delay execution to make sure Auth0 data is available
-    const timer = setTimeout(fetchUserProfile, 500); // 500ms delay
-
-    return () => clearTimeout(timer); // Cleanup function
+    fetchUserProfile();
   }, [isAuthenticated, user, getAccessTokenSilently]);
 
   // Function to calculate face location from API response
@@ -180,7 +163,7 @@ export default function App() {
             <Rank name={user?.name} entries={entries} />
             <ImageLinkForm
               onInputChange={onInputChange}
-              onButtonSubmit={onImageSubmit}
+              onImageSubmit={onImageSubmit}
             />
             <FaceRecognition boxes={boxes} imageUrl={imageUrl} />
           </>
