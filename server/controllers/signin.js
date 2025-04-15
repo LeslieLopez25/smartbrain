@@ -1,7 +1,3 @@
-const jwt = require("jsonwebtoken");
-
-const JWTSECRET = process.env.JWTSECRET;
-
 const handleSignin = (db, bcrypt, req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -27,40 +23,8 @@ const handleSignin = (db, bcrypt, req, res) => {
     .catch((err) => Promise.reject("wrong credentials"));
 };
 
-const getAuthTokenId = (db, req, res) => {
-  const { authorization } = req.headers;
-  db("tokens")
-    .where({ token: authorization })
-    .andWhere("expires_at", ">", new Date())
-    .then((rows) => {
-      if (rows.length) {
-        res.json({ success: "true", userId: rows[0].user_id });
-      } else {
-        res.status(401).json("Unauthorized");
-      }
-    })
-    .catch((err) => res.status(400).json("Error verifying token"));
-};
-
-const signToken = (email) => {
-  const jwtPayload = { email };
-  return jwt.sign(jwtPayload, JWTSECRET, { expiresIn: "30mins" });
-};
-
-const createSession = async (db, user) => {
-  const { email, id } = user;
-  const token = signToken(email);
-
-  const expiresAt = new Date();
-  expiresAt.setMinutes(expiresAt.getMinutes() + 30);
-
-  await db("tokens").insert({
-    token,
-    user_id: id,
-    expires_at: expiresAt,
-  });
-
-  return { success: "true", userId: id, token };
+const getAuthTokenId = () => {
+  console.log("auth ok");
 };
 
 const signinAuthentication = (db, bcrypt) => (req, res) => {
@@ -68,12 +32,7 @@ const signinAuthentication = (db, bcrypt) => (req, res) => {
   return authorization
     ? getAuthTokenId()
     : handleSignin(db, bcrypt, req, res)
-        .then((data) => {
-          return data.id && data.email
-            ? createSession(data)
-            : Promise.reject(data);
-        })
-        .then((session) => res.json(session))
+        .then((data) => res.json(data))
         .catch((err) => res.status(400).json(err));
 };
 

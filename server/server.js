@@ -3,8 +3,6 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt-nodejs");
 const cors = require("cors");
 const knex = require("knex");
-require("dotenv").config();
-require("./utils/jobs");
 
 const register = require("./controllers/register");
 const signin = require("./controllers/signin");
@@ -15,7 +13,7 @@ const db = knex({
   client: "pg",
   connection: {
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
+    ssl: true,
   },
 });
 
