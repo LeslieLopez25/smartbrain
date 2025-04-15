@@ -4,7 +4,7 @@ import LoadingScreen from "react-loading-screen";
 import Modal from "./components/Modal/Modal";
 import Profile from "./components/Profile/Profile";
 import AuthProvider from "./auth/auth0Provider";
-import { useAuth0 } from "@auth0/auth0-react";
+import useAuth from "./auth/useAuth";
 import axios from "axios";
 import { API_URL } from "./config";
 
@@ -22,7 +22,7 @@ const Rank = lazy(() => import("./components/Rank/Rank"));
 
 export default function App() {
   const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
-    useAuth0();
+    useAuth();
   const [imageUrl, setImageUrl] = useState("");
   const [boxes, setBoxes] = useState([]);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -31,23 +31,18 @@ export default function App() {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      try {
-        console.log("Fetching profile for:", user.sub);
-
-        const token = await getAccessTokenSilently();
-        console.log("Auth0 Token Retrieved:", token);
-
-        const response = await axios.get(`${API_URL}/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        console.log("Profile response:", response.data);
-        setUserData(response.data);
-      } catch (error) {
-        console.error(
-          "Error fetching user profile:",
-          error.response?.data || error
-        );
+      if (isAuthenticated && user) {
+        try {
+          console.log("Fetching profile for:", user.sub);
+          const token = await getAccessTokenSilently();
+          const response = await axios.get(`${API_URL}/profile`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          console.log("Profile response:", response.data);
+          setUserData(response.data);
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+        }
       }
     };
 
@@ -145,10 +140,7 @@ export default function App() {
   };
 
   const toggleModal = () => {
-    setIsProfileOpen((prev) => {
-      console.log("Profile Modal Toggled:", !prev);
-      return !prev;
-    });
+    setIsProfileOpen((prev) => !prev);
   };
 
   if (isLoading) {
@@ -191,7 +183,7 @@ export default function App() {
             isAuthenticated={isAuthenticated}
             toggleModal={toggleModal}
           />
-          {isProfileOpen && userData && (
+          {isProfileOpen && (
             <Modal>
               <Profile toggleModal={toggleModal} user={userData} />
             </Modal>

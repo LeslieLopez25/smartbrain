@@ -15,10 +15,6 @@ const handleApiCall = (req, res) => {
 const handleImage = (req, res, db) => {
   const { auth0_id } = req.body; // Use auth0_id
 
-  if (!auth0_id) {
-    return res.status(400).json("User ID is required");
-  }
-
   db("users")
     .where({ auth0_id }) // Find user by auth0_id
     .increment("entries", 1)

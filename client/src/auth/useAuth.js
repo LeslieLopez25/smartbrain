@@ -1,14 +1,8 @@
 import { useAuth0 } from "@auth0/auth0-react";
 
 const useAuth = () => {
-  const {
-    loginWithRedirect,
-    logout,
-    user,
-    isAuthenticated,
-    isLoading,
-    getAccessTokenSilently,
-  } = useAuth0();
+  const { loginWithRedirect, logout, user, isAuthenticated, isLoading } =
+    useAuth0();
 
   const saveUserToDB = async (user) => {
     if (!user) return;
@@ -42,7 +36,6 @@ const useAuth = () => {
     user,
     isAuthenticated,
     isLoading,
-    getAccessTokenSilently,
   };
 };
 
