@@ -86,17 +86,17 @@ export default function App() {
     try {
       const response = await fetch(`${API_URL}/imageurl`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ input: imageUrl }),
-        credentials: "include", // Add this line
       });
-
       if (!response.ok) throw new Error("Failed to fetch");
+
       const data = await response.json();
+
       const calculatedBoxes = calculateFaceLocation(data);
+
       setBoxes(calculatedBoxes);
+
       // Update entries count
       const entriesResponse = await fetch(`${API_URL}/image`, {
         method: "PUT",
