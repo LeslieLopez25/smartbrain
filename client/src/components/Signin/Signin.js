@@ -1,6 +1,7 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import LoadingScreen from "react-loading-screen";
+import BASE_URL from "../../config";
 
 import "./Signin.css";
 
