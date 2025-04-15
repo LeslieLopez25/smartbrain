@@ -1,28 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import "./Profile.css";
 
-export default function Profile({ isProfileOpen, toggleModal, user }) {
-  const [name, setName] = useState(user.name || "");
-  const [age, setAge] = useState(user.age || "");
-  const [pet, setPet] = useState(user.pet || "");
-
-  const onFormChange = (event) => {
-    const { name, value } = event.target;
-    switch (name) {
-      case "user-name":
-        setName(value);
-        break;
-      case "user-age":
-        setAge(value);
-        break;
-      case "user-pet":
-        setPet(value);
-        break;
-      default:
-        break;
-    }
-  };
-
+const Profile = ({ isProfileOpen, toggleModal, user }) => {
   return (
     <div className="profile-modal">
       <article className="br3 ba b--black-40 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center bg-navy">
@@ -32,7 +11,7 @@ export default function Profile({ isProfileOpen, toggleModal, user }) {
             className="h3 w3 dib"
             alt="avatar"
           />
-          <h1>{name}</h1>
+          <h1>{user.name}</h1>
           <h4>{`Images Submitted: ${user.entries}`}</h4>
           <p>{`Member Since: ${new Date(user.joined).toLocaleDateString()}`}</p>
           <hr />
@@ -40,7 +19,6 @@ export default function Profile({ isProfileOpen, toggleModal, user }) {
             Name:
           </label>
           <input
-            onChange={onFormChange}
             className="pa2 ba w-100"
             placeholder="Enter your name"
             type="text"
@@ -51,7 +29,6 @@ export default function Profile({ isProfileOpen, toggleModal, user }) {
             Age:
           </label>
           <input
-            onChange={onFormChange}
             className="pa2 ba w-100"
             placeholder="Enter your age"
             type="number"
@@ -62,7 +39,6 @@ export default function Profile({ isProfileOpen, toggleModal, user }) {
             Pet:
           </label>
           <input
-            onChange={onFormChange}
             className="pa2 ba w-100"
             placeholder="Enter your pet's name"
             type="text"
