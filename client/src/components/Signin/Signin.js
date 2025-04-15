@@ -19,11 +19,10 @@ export default function Signin({ loadUser, onRouteChange }) {
     setSignInData({ ...signInData, signInPassword: event.target.value });
   };
 
-  const onSubmitSignIn = () => {
-    setSignInData((prev) => ({ ...prev, loading: true }));
-
+  const onSubmitSignIn = (data) => {
+    setSignInData({ ...signInData, loading: true });
     fetch("https://smartbrain-api-2mk1.onrender.com/signin", {
-      method: "post",
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: signInEmail,
@@ -32,19 +31,14 @@ export default function Signin({ loadUser, onRouteChange }) {
     })
       .then((response) => response.json())
       .then((user) => {
-        setSignInData((prev) => ({ ...prev, loading: false }));
-
-        if (user.id) {
-          loadUser(user);
+        if (data.userId) {
+          loadUser(data);
           onRouteChange("home");
-        } else {
-          alert("Invalid credentials. Please try again.");
         }
       })
-      .catch((err) => {
-        setSignInData((prev) => ({ ...prev, loading: false }));
-        console.error("Signin error:", err);
-        alert("Something went wrong. Please try again later.");
+      .catch(console.log)
+      .finally(() => {
+        setSignInData({ ...signInData, loading: false });
       });
   };
 
