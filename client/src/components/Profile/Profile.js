@@ -1,19 +1,17 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import { API_URL } from "../../config";
-
 import "./Profile.css";
 
-export default function Profile({ toggleModal, user = {} }) {
+export default function Profile({ toggleModal, user }) {
   const { getAccessTokenSilently } = useAuth0();
-
-  const [name, setName] = useState(user?.name || "");
-  const [age, setAge] = useState(user?.age || "");
-  const [pet, setPet] = useState(user?.pet || "");
+  const [name, setName] = useState(user.name || "");
+  const [age, setAge] = useState(user.age || "");
+  const [pet, setPet] = useState(user.pet || "");
   const [loading, setLoading] = useState(false);
 
-  const saveProfile = useCallback(async () => {
+  const saveProfile = async () => {
     try {
       setLoading(true);
       const token = await getAccessTokenSilently();
@@ -29,7 +27,7 @@ export default function Profile({ toggleModal, user = {} }) {
       );
 
       if (response.status === 200) {
-        console.log("Profile updated successfully:", response.data);
+        console.log("Profile update successfully:", response.data);
         toggleModal();
       } else {
         console.error("Failed to update profile");
@@ -60,6 +58,7 @@ export default function Profile({ toggleModal, user = {} }) {
             Name:
           </label>
           <input
+            onChange={(e) => setName(e.target.value)}
             className="pa2 ba w-100"
             placeholder={user.name}
             type="text"
@@ -70,9 +69,10 @@ export default function Profile({ toggleModal, user = {} }) {
             Age:
           </label>
           <input
+            onChange={(e) => setAge(e.target.value)}
             className="pa2 ba w-100"
             placeholder={user.age}
-            type="number"
+            type="text"
             name="user-age"
             id="age"
           />
@@ -80,6 +80,7 @@ export default function Profile({ toggleModal, user = {} }) {
             Pet:
           </label>
           <input
+            onChange={(e) => setPet(e.target.value)}
             className="pa2 ba w-100"
             placeholder={user.pet}
             type="text"
@@ -90,12 +91,8 @@ export default function Profile({ toggleModal, user = {} }) {
             className="mt4"
             style={{ display: "flex", justifyContent: "space-evenly" }}
           >
-            <button
-              className="b pa2 grow pointer hover-white w-40 bg-green b--black-20"
-              onClick={saveProfile}
-              disabled={loading}
-            >
-              {loading ? "Saving..." : "Save"}
+            <button className="b pa2 grow pointer hover-white w-40 bg-green b--black-20">
+              Save
             </button>
             <button
               className="b pa2 grow pointer hover-white w-40 bg-red b--black-20"

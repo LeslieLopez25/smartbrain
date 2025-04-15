@@ -1,11 +1,10 @@
-import React, { useState, Suspense, lazy, useEffect } from "react";
+import React, { useState, Suspense, lazy } from "react";
 import ParticlesBg from "particles-bg";
 import LoadingScreen from "react-loading-screen";
 import Modal from "./components/Modal/Modal";
 import Profile from "./components/Profile/Profile";
 import AuthProvider from "./auth/auth0Provider";
 import useAuth from "./auth/useAuth";
-import axios from "axios";
 import { API_URL } from "./config";
 
 import "./App.css";
@@ -21,8 +20,7 @@ const ImageLinkForm = lazy(() =>
 const Rank = lazy(() => import("./components/Rank/Rank"));
 
 export default function App() {
-  const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
-    useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [imageUrl, setImageUrl] = useState("");
   const [boxes, setBoxes] = useState([]);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -33,12 +31,10 @@ export default function App() {
     const fetchUserProfile = async () => {
       if (isAuthenticated && user) {
         try {
-          console.log("Fetching profile for:", user.sub);
           const token = await getAccessTokenSilently();
           const response = await axios.get(`${API_URL}/profile`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          console.log("Profile response:", response.data);
           setUserData(response.data);
         } catch (error) {
           console.error("Error fetching user profile:", error);
@@ -185,7 +181,7 @@ export default function App() {
           />
           {isProfileOpen && (
             <Modal>
-              <Profile toggleModal={toggleModal} user={userData} />
+              <Profile toggleModal={toggleModal} user={user} />
             </Modal>
           )}
           {isAuthenticated ? (
