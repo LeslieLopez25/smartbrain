@@ -1,45 +1,27 @@
-import React, { useState, useCallback } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
-import axios from "axios";
-import { API_URL } from "../../config";
-
+import React, { useState } from "react";
 import "./Profile.css";
 
-export default function Profile({ toggleModal, user = {} }) {
-  const { getAccessTokenSilently } = useAuth0();
+export default function Profile({ isProfileOpen, toggleModal, user }) {
+  const [name, setName] = useState(user.name || "");
+  const [age, setAge] = useState(user.age || "");
+  const [pet, setPet] = useState(user.pet || "");
 
-  const [name, setName] = useState(user?.name || "");
-  const [age, setAge] = useState(user?.age || "");
-  const [pet, setPet] = useState(user?.pet || "");
-  const [loading, setLoading] = useState(false);
-
-  const saveProfile = useCallback(async () => {
-    try {
-      setLoading(true);
-      const token = await getAccessTokenSilently();
-      const response = await axios.post(
-        `${API_URL}/profile`,
-        { name, age, pet },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        console.log("Profile updated successfully:", response.data);
-        toggleModal();
-      } else {
-        console.error("Failed to update profile");
-      }
-    } catch (error) {
-      console.error("Error saving profile:", error);
-    } finally {
-      setLoading(false);
+  const onFormChange = (event) => {
+    const { name, value } = event.target;
+    switch (name) {
+      case "user-name":
+        setName(value);
+        break;
+      case "user-age":
+        setAge(value);
+        break;
+      case "user-pet":
+        setPet(value);
+        break;
+      default:
+        break;
     }
-  }, [name, age, pet, getAccessTokenSilently, toggleModal]);
+  };
 
   return (
     <div className="profile-modal">
@@ -50,47 +32,42 @@ export default function Profile({ toggleModal, user = {} }) {
             className="h3 w3 dib"
             alt="avatar"
           />
-          <h1>{name || "Your Name"}</h1>
-          <h4>{`Images Submitted: ${user?.entries || 0}`}</h4>
-          <p>{`Member Since: ${
-            user?.joined ? new Date(user.joined).toLocaleDateString() : "N/A"
-          }`}</p>
+          <h1>{name}</h1>
+          <h4>{`Images Submitted: ${user.entries}`}</h4>
+          <p>{`Member Since: ${new Date(user.joined).toLocaleDateString()}`}</p>
           <hr />
           <label className="mt2 fw6" htmlFor="user-name">
             Name:
           </label>
           <input
-            onChange={(e) => setName(e.target.value)}
+            onChange={onFormChange}
             className="pa2 ba w-100"
             placeholder="Enter your name"
             type="text"
             name="user-name"
             id="name"
-            value={name}
           />
           <label className="mt2 fw6" htmlFor="user-age">
             Age:
           </label>
           <input
-            onChange={(e) => setAge(e.target.value)}
+            onChange={onFormChange}
             className="pa2 ba w-100"
             placeholder="Enter your age"
             type="number"
             name="user-age"
             id="age"
-            value={age}
           />
           <label className="mt2 fw6" htmlFor="user-pet">
             Pet:
           </label>
           <input
-            onChange={(e) => setPet(e.target.value)}
+            onChange={onFormChange}
             className="pa2 ba w-100"
             placeholder="Enter your pet's name"
             type="text"
             name="user-pet"
             id="pet"
-            value={pet}
           />
           <div
             className="mt4"
@@ -117,4 +94,6 @@ export default function Profile({ toggleModal, user = {} }) {
       </article>
     </div>
   );
-}
+};
+
+export default Profile;

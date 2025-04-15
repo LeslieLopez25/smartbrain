@@ -43,6 +43,13 @@ export default function App() {
         const token = await getAccessTokenSilently();
         console.log("Auth0 Token Retrieved:", token);
 
+        if (!token) {
+          console.error("Auth0 Token is missing!");
+          return;
+        }
+
+        console.log("Sending token in request:", `Bearer ${token}`);
+
         const response = await axios.get(`${API_URL}/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
