@@ -1,19 +1,13 @@
-import React, { useEffect, useMemo } from "react";
-import ReactDOM from "react-dom";
-
+import React, { useEffect } from "react";
+import ReactDom from "react-dom";
 import "./Modal.css";
 
+const modalRoot = document.getElementById("modal-root");
+
 export default function Modal({ children }) {
-  const el = useMemo(() => document.createElement("div"), []);
+  const el = document.createElement("div");
 
   useEffect(() => {
-    const modalRoot = document.getElementById("modal-root");
-
-    if (!modalRoot) {
-      console.error("Error: No 'modal-root' element found in index.html!");
-      return;
-    }
-
     modalRoot.appendChild(el);
 
     return () => {
@@ -21,5 +15,5 @@ export default function Modal({ children }) {
     };
   }, [el]);
 
-  return ReactDOM.createPortal(children, el);
+  return ReactDom.createPortal(children, el);
 }

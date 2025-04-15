@@ -1,7 +1,6 @@
 import React from "react";
 import Tilt from "react-parallax-tilt";
 import brain from "./brain.png";
-
 import "./Logo.css";
 
 export default function Logo() {
