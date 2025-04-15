@@ -6,7 +6,7 @@ import {
   DropdownItem,
 } from "reactstrap";
 
-export default function ProfileImage({
+export default function ProfileIcon({
   onRouteChange,
   toggleModal,
   direction = "down",

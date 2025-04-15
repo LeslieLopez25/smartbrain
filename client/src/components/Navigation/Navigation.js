@@ -1,5 +1,5 @@
 import React from "react";
-import ProfileImage from "../Profile/ProfileImage";
+import ProfileIcon from "../Profile/ProfileIcon";
 
 export default function Navigation({ onRouteChange, isSignedIn, toggleModal }) {
   if (isSignedIn) {
@@ -10,7 +10,7 @@ export default function Navigation({ onRouteChange, isSignedIn, toggleModal }) {
           justifyContent: "flex-end",
         }}
       >
-        <ProfileImage onRouteChange={onRouteChange} toggleModal={toggleModal} />
+        <ProfileIcon onRouteChange={onRouteChange} toggleModal={toggleModal} />
       </nav>
     );
   } else {
