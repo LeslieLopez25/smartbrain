@@ -3,7 +3,6 @@ const bodyParser = require("body-parser"); // latest version of exressJS now com
 const bcrypt = require("bcrypt-nodejs");
 const cors = require("cors");
 const knex = require("knex");
-const checkJwt = require("./auth");
 
 const register = require("./controllers/register");
 const signin = require("./controllers/signin");
@@ -19,7 +18,6 @@ const db = knex({
 });
 
 const app = express();
-const router = express.Router();
 
 app.use(cors());
 app.use(express.json());
@@ -36,10 +34,6 @@ app.post("/register", (req, res) => {
 
 app.get("/profile/:id", (req, res) => {
   profile.handleProfileGet(req, res, db);
-});
-
-router.get("/profile", checkJwt, (req, res) => {
-  res.json({ message: "This is a protected route", user: req.auth });
 });
 
 app.put("/image", (req, res) => {
