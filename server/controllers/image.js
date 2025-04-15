@@ -1,4 +1,5 @@
 const Clarifai = require("clarifai");
+const axios = require("axios");
 
 const app = new Clarifai.App({
   // Use your own Clarifai API key
@@ -12,26 +13,40 @@ const handleApiCall = (req, res) => {
     .catch((err) => res.status(400).json("Unable to work with API"));
 };
 
-const handleImage = async (req, res, db) => {
+const handleImage = async (req, res) => {
   const { auth0_id } = req.body;
 
   if (!auth0_id) {
-    return res.status(400).json({ error: "User ID is required" });
+    return res.status(400).json("User ID is required");
   }
 
   try {
-    const updatedUser = await db("users")
-      .where({ auth0_id })
-      .increment("entries", 1)
-      .returning("entries");
+    const auth0Domain = process.env.AUTH0_DOMAIN;
+    const managementToken = process.env.AUTH0_MANAGEMENT_TOKEN;
 
-    if (updatedUser.length) {
-      res.json({ entries: updatedUser[0].entries });
-    } else {
-      res.status(404).json({ error: "User not found" });
+    if (!managementToken) {
+      return res.status(500).json({ error: "Missing Auth0 Management Token" });
     }
+
+    // Get current metadata
+    const userUrl = `https://${auth0Domain}/api/v2/users/${auth0_id}`;
+    const headers = {
+      Authorization: `Bearer ${managementToken}`,
+      "Content-Type": "application/json",
+    };
+
+    const userResponse = await axios.get(userUrl, { headers });
+    let userMetadata = userResponse.data.user_metadata || {};
+
+    // Increment entries
+    userMetadata.entries = (userMetadata.entries || 0) + 1;
+
+    // Update metadata in Auth0
+    await axios.patch(userUrl, { user_metadata: userMetadata }, { headers });
+
+    res.json({ entries: userMetadata.entries });
   } catch (error) {
-    console.error("Error updating entries:", error);
+    console.error("Error updating user entries:", error);
     res.status(500).json({ error: "Failed to update entries" });
   }
 };
