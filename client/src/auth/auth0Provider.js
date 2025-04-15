@@ -10,7 +10,7 @@ const AuthProvider = ({ children }) => {
         audience: process.env.REACT_APP_AUTH0_AUDIENCE,
       }}
       cacheLocation="localstorage"
-      useRefreshTokens
+      useRefreshTokens={true}
     >
       {children}
     </Auth0Provider>
