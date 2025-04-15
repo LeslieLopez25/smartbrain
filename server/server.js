@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const knex = require("knex");
 const jwtCheck = require("./auth/authMiddleware");
 const profile = require("./controllers/profile");
@@ -16,15 +17,7 @@ const db = knex({
 
 const app = express();
 
-const cors = require("cors");
-
-app.use(
-  cors({
-    origin: ["http://localhost:3000", "https://smartbrain-mtf1.onrender.com"],
-    allowedHeaders: ["Authorization", "Content-Type"],
-  })
-);
-
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => res.send("Server is running"));
