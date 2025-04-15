@@ -1,4 +1,4 @@
-import React, { useState, Suspense, lazy } from "react";
+import React, { Suspense, lazy } from "react";
 import ParticlesBg from "particles-bg";
 import LoadingScreen from "react-loading-screen";
 import Modal from "./components/Modal/Modal";
@@ -25,25 +25,6 @@ export default function App() {
   const [boxes, setBoxes] = useState([]);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [entries, setEntries] = useState(0);
-  const [userData, setUserData] = useState(null);
-
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      if (isAuthenticated && user) {
-        try {
-          const token = await getAccessTokenSilently();
-          const response = await axios.get(`${API_URL}/profile`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setUserData(response.data);
-        } catch (error) {
-          console.error("Error fetching user profile:", error);
-        }
-      }
-    };
-
-    fetchUserProfile();
-  }, [isAuthenticated, user, getAccessTokenSilently]);
 
   // Function to calculate face location from API response
   const calculateFaceLocation = (data) => {
@@ -53,13 +34,8 @@ export default function App() {
     const width = Number(image.width);
     const height = Number(image.height);
 
-    if (!data.outputs || !data.outputs[0].data.regions) {
-      return [];
-    }
-
     return data.outputs[0].data.regions.map((face) => {
       const clarifaiFace = face.region_info.bounding_box;
-
       return {
         leftCol: clarifaiFace.left_col * width,
         topRow: clarifaiFace.top_row * height,
@@ -75,63 +51,17 @@ export default function App() {
 
   const onImageSubmit = async () => {
     try {
-      const response = await fetch(`${API_URL}/imageurl`, {
+      const response = await fetch(`${API_URL}/image`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input: imageUrl }),
+        body: JSON.stringify({ imageUrl }),
       });
       if (!response.ok) throw new Error("Failed to fetch");
 
       const data = await response.json();
-
-      const calculatedBoxes = calculateFaceLocation(data);
-
-      setBoxes(calculatedBoxes);
-
-      // Update entries count
-      const entriesResponse = await fetch(`${API_URL}/image`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ auth0_id: user?.sub }),
-      });
-
-      if (!entriesResponse.ok) throw new Error("Failed to update entries");
-
-      const entriesData = await entriesResponse.json();
-
-      if (entriesData.entries !== undefined) {
-        setEntries(entriesData.entries);
-      } else {
-        console.warn("Entries field missing in response:", entriesData);
-      }
+      setBoxes(calculateFaceLocation(data));
     } catch (error) {
       console.error("Error detecting faces:", error);
-    }
-  };
-
-  const onButtonSubmit = async () => {
-    if (!imageUrl) {
-      console.warn("No image URL provided!");
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_URL}/imageurl`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ input: imageUrl }),
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch");
-
-      const data = await response.json();
-
-      const calculatedBoxes = calculateFaceLocation(data);
-      setBoxes(calculatedBoxes);
-    } catch (error) {
-      console.error("Error in face detection:", error);
     }
   };
 
@@ -187,11 +117,10 @@ export default function App() {
           {isAuthenticated ? (
             <>
               <Logo />
-              <Rank name={user?.name} entries={entries} />
+              <Rank name={user?.name} />
               <ImageLinkForm
                 onInputChange={onInputChange}
                 onImageSubmit={onImageSubmit}
-                onButtonSubmit={onButtonSubmit}
               />
               <FaceRecognition boxes={boxes} imageUrl={imageUrl} />
             </>

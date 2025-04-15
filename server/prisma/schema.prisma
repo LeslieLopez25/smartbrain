@@ -26,7 +26,6 @@ model users {
   id      Int      @id @default(autoincrement())
   name    String?  @db.VarChar(100)
   email   String   @unique
-  auth0_id String @unique
   entries BigInt?  @default(0)
   joined  DateTime @db.Timestamp(6)
   tokens  tokens[]

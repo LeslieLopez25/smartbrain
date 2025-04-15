@@ -9,8 +9,6 @@ const AuthProvider = ({ children }) => {
         redirect_uri: window.location.origin,
         audience: process.env.REACT_APP_AUTH0_AUDIENCE,
       }}
-      cacheLocation="localstorage"
-      useRefreshTokens={true}
     >
       {children}
     </Auth0Provider>

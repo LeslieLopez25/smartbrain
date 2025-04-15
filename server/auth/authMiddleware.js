@@ -1,9 +1,9 @@
 const { auth } = require("express-oauth2-jwt-bearer");
 
-const jwtCheck = auth({
+const checkJwt = auth({
   audience: process.env.AUTH0_AUDIENCE,
-  issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}`,
-  tokenSigningAlg: "RS256",
+  issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
+  algorithms: ["RS256"],
 });
 
-module.exports = jwtCheck;
+module.exports = checkJwt;

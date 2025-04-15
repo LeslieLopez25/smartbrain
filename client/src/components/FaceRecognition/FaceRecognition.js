@@ -12,22 +12,18 @@ export default function FaceRecognition({ imageUrl, boxes }) {
           width="500px"
           height="auto"
         />
-        {boxes.length > 0 ? (
-          boxes.map((box, index) => (
-            <div
-              key={index}
-              className="bounding-box"
-              style={{
-                top: box.topRow,
-                right: box.rightCol,
-                bottom: box.bottomRow,
-                left: box.leftCol,
-              }}
-            ></div>
-          ))
-        ) : (
-          <p className="white f3">No faces detected</p>
-        )}
+        {boxes.map((box) => (
+          <div
+            key={`box${box.topRow}${box.rightCol}`}
+            className="bounding-box"
+            style={{
+              top: box.topRow,
+              right: box.rightCol,
+              bottom: box.bottomRow,
+              left: box.leftCol,
+            }}
+          ></div>
+        ))}
       </div>
     </div>
   );
