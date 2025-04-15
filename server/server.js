@@ -1,35 +1,28 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const knex = require("knex");
-const jwtCheck = require("./auth/authMiddleware");
+const checkJwt = require("./auth/authMiddleware");
 const profile = require("./controllers/profile");
 const image = require("./controllers/image");
 const { handleAuthUser } = require("./controllers/userController");
 
-const db = knex({
-  client: "pg",
-  connection: {
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-  },
-});
-
 const app = express();
 
+// Apply CORS before any route handlers
 app.use(cors());
+
 app.use(express.json());
 
-app.get("/", (req, res) => res.send("Server is running"));
-app.get("/auth/user", jwtCheck, (req, res) => handleAuthUser(req, res, db));
-app.get("/profile", jwtCheck, (req, res) =>
-  profile.handleProfileGet(req, res, db)
-);
-app.put("/profile", jwtCheck, (req, res) =>
-  profile.handleProfileUpdate(req, res, db)
-);
-app.put("/image", jwtCheck, (req, res) => image.handleImage(req, res, db));
-app.post("/imageurl", jwtCheck, (req, res) => image.handleApiCall(req, res));
+app.options("*", cors()); // Handle preflight requests
 
-const PORT = process.env.DB_PORT || 5000;
+app.get("/", (req, res) => res.send("Server is running"));
+app.get("/auth/user", checkJwt, handleAuthUser);
+app.get("/profile", checkJwt, (req, res) => profile.handleProfileGet(req, res));
+app.put("/profile", checkJwt, (req, res) =>
+  profile.handleProfileUpdate(req, res)
+);
+app.put("/image", checkJwt, (req, res) => image.handleImage(req, res));
+app.post("/imageurl", checkJwt, (req, res) => image.handleApiCall(req, res));
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`App is running on port ${PORT}`));
