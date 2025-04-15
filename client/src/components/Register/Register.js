@@ -26,8 +26,8 @@ export default function Register({ loadUser, onRouteChange }) {
 
   const onSubmitSignIn = () => {
     setUserData({ ...userData, loading: true });
-    fetch("https://smartbrain-api-2mk1.onrender.com/register", {
-      method: "POST",
+    fetch("http://localhost:5000/register", {
+      method: "post",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email,
