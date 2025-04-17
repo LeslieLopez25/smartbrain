@@ -1,5 +1,5 @@
+require("dotenv").config();
 const express = require("express");
-const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt-nodejs");
 const cors = require("cors");
 const knex = require("knex");
@@ -17,9 +17,21 @@ const db = knex({
   },
 });
 
+const allowedOrigins = ["http://localhost:3000", process.env.FRONTEND_URL];
+
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  })
+);
 app.use(express.json());
 
 app.get("/", (req, res) => {

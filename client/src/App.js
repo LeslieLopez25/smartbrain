@@ -1,9 +1,10 @@
-import React, { useState, Suspense, lazy } from "react";
+import React, { useState, useEffect, Suspense, lazy } from "react";
 import ParticlesBg from "particles-bg";
 import LoadingScreen from "react-loading-screen";
 import Modal from "./components/Modal/Modal";
 import Profile from "./components/Profile/Profile";
-
+import { useAuth0 } from "@auth0/auth0-react";
+import { API_URL } from "./config";
 import "./App.css";
 
 const FaceRecognition = lazy(() =>
@@ -15,15 +16,11 @@ const ImageLinkForm = lazy(() =>
   import("./components/ImageLinkForm/ImageLinkForm")
 );
 const Rank = lazy(() => import("./components/Rank/Rank"));
-const SignIn = lazy(() => import("./components/Signin/Signin"));
-const Register = lazy(() => import("./components/Register/Register"));
 
 const initialState = {
   input: "",
   imageUrl: "",
   boxes: [],
-  route: "signin",
-  isSignedIn: false,
   user: {
     id: "",
     name: "",
@@ -32,16 +29,57 @@ const initialState = {
     joined: "",
     pet: "",
     age: "",
+    picture: "",
   },
 };
 
 export default function App() {
-  const { user, isAuthenticated, isLoading } = useAuth();
-  const [imageUrl, setImageUrl] = React.useState("");
-  const [boxes, setBoxes] = React.useState([]);
-  const [isProfileOpen, setIsProfileOpen] = React.useState(false);
+  const {
+    isAuthenticated,
+    loginWithRedirect,
+    logout,
+    user: auth0User,
+    isLoading,
+  } = useAuth0();
 
-  // Function to calculate face location from API response
+  const [state, setState] = useState(initialState);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated && auth0User) {
+      const saveUserToDB = async () => {
+        try {
+          const response = await fetch(`${API_URL}/auth`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              auth0_id: auth0User.sub,
+              name: auth0User.name,
+              email: auth0User.email,
+            }),
+          });
+
+          const dbUser = await response.json();
+
+          if (dbUser.id) {
+            setState((prevState) => ({
+              ...prevState,
+              user: {
+                ...prevState.user,
+                ...dbUser,
+                picture: auth0User.picture,
+              },
+            }));
+          }
+        } catch (error) {
+          console.error("Failed to save user to DB:", error);
+        }
+      };
+
+      saveUserToDB();
+    }
+  }, [isAuthenticated, auth0User]);
+
   const calculateFaceLocation = (data) => {
     const image = document.getElementById("inputimage");
     const width = Number(image.width);
@@ -58,7 +96,7 @@ export default function App() {
   };
 
   const displayFaceBox = (boxes) => {
-    setState((prevState) => ({ ...prevState, boxes: boxes }));
+    setState((prevState) => ({ ...prevState, boxes }));
   };
 
   const onInputChange = (event) => {
@@ -70,7 +108,8 @@ export default function App() {
       ...prevState,
       imageUrl: prevState.input,
     }));
-    fetch("https://facerecognitionbrain-api-ral3.onrender.com/imageurl", {
+
+    fetch(`${API_URL}/imageurl`, {
       method: "post",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -80,14 +119,14 @@ export default function App() {
       .then((response) => response.json())
       .then((response) => {
         if (response) {
-          fetch("https://facerecognitionbrain-api-ral3.onrender.com/image", {
+          fetch(`${API_URL}/image`, {
             method: "put",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               id: state.user.id,
             }),
           })
-            .then((response) => response.json())
+            .then((res) => res.json())
             .then((count) => {
               setState((prevState) => ({
                 ...prevState,
@@ -104,20 +143,23 @@ export default function App() {
       .catch((err) => console.log(err));
   };
 
-  const onRouteChange = (route) => {
-    if (route === "signout") {
-      return setState(initialState);
-    } else if (route === "home") {
-      setState((prevState) => ({ ...prevState, isSignedIn: true }));
-    }
-    setState((prevState) => ({ ...prevState, route: route }));
-  };
-
   const toggleModal = () => {
     setIsProfileOpen((prevState) => !prevState);
   };
 
-  const { isSignedIn, imageUrl, route, boxes, user } = state;
+  const { imageUrl, boxes, user } = state;
+
+  if (isLoading) {
+    return (
+      <LoadingScreen
+        loading={true}
+        bgColor="transparent"
+        spinnerColor="#ffffff"
+        textColor="#ffffff"
+        text="Loading..."
+      />
+    );
+  }
 
   return (
     <div className="App">
@@ -135,6 +177,7 @@ export default function App() {
           zIndex: -1,
         }}
       />
+
       <Suspense
         fallback={
           <LoadingScreen
@@ -142,17 +185,17 @@ export default function App() {
             bgColor="transparent"
             spinnerColor="#ffffff"
             textColor="#ffffff"
-            logoSrc=""
             text="Loading..."
-            className="text-xl w-fit mx-auto backdrop-blur-sm"
           />
         }
       >
         <Navigation
-          isSignedIn={isSignedIn}
-          onRouteChange={onRouteChange}
+          isSignedIn={isAuthenticated}
+          loginWithRedirect={loginWithRedirect}
+          logout={logout}
           toggleModal={toggleModal}
         />
+
         {isProfileOpen && (
           <Modal>
             <Profile
@@ -162,20 +205,28 @@ export default function App() {
             />
           </Modal>
         )}
-        {route === "home" ? (
+
+        {isAuthenticated ? (
           <div>
             <Logo />
-            <Rank name={state.user.name} entries={state.user.entries} />
+            <Rank name={user.name} entries={user.entries} />
             <ImageLinkForm
               onInputChange={onInputChange}
               onButtonSubmit={onButtonSubmit}
             />
             <FaceRecognition boxes={boxes} imageUrl={imageUrl} />
           </div>
-        ) : route === "signin" ? (
-          <SignIn loadUser={loadUser} onRouteChange={onRouteChange} />
         ) : (
-          <Register loadUser={loadUser} onRouteChange={onRouteChange} />
+          <div className="text-white text-center mt-20">
+            <h2 className="text-2xl font-bold">Welcome!</h2>
+            <p className="mb-4">Please sign in to use the app.</p>
+            <button
+              onClick={loginWithRedirect}
+              className="bg-blue-500 px-6 py-2 rounded hover:bg-blue-600"
+            >
+              Sign In
+            </button>
+          </div>
         )}
       </Suspense>
     </div>

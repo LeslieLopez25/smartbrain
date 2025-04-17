@@ -1,34 +1,24 @@
 import React from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import ProfileIcon from "../Profile/ProfileIcon";
 
-export default function Navigation({ onRouteChange, isSignedIn, toggleModal }) {
-  if (isSignedIn) {
-    return (
-      <nav
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-        }}
-      >
-        <ProfileIcon onRouteChange={onRouteChange} toggleModal={toggleModal} />
-      </nav>
-    );
-  } else {
-    return (
-      <nav style={{ display: "flex", justifyContent: "flex-end" }}>
-        <p
-          onClick={() => onRouteChange("signin")}
-          className="f3 link dim white underline pa3 pointer"
-        >
-          Sign In
-        </p>
-        <p
-          onClick={() => onRouteChange("register")}
-          className="f3 link dim white underline pa3 pointer"
-        >
-          Register
-        </p>
-      </nav>
-    );
-  }
+export default function Navigation({ toggleModal }) {
+  const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
+
+  return (
+    <nav style={{ display: "flex", justifyContent: "flex-end" }}>
+      {isAuthenticated ? (
+        <ProfileIcon toggleModal={toggleModal} />
+      ) : (
+        <>
+          <p
+            onClick={() => loginWithRedirect()}
+            className="f3 link dim white underline pa3 pointer"
+          >
+            Sign In
+          </p>
+        </>
+      )}
+    </nav>
+  );
 }

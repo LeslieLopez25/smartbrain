@@ -5,14 +5,15 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function ProfileIcon({
-  onRouteChange,
   toggleModal,
   direction = "down",
   ...args
 }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { logout, user: auth0User } = useAuth0();
 
   const toggle = () => setDropdownOpen((prevState) => !prevState);
 
@@ -21,7 +22,7 @@ export default function ProfileIcon({
       <Dropdown isOpen={dropdownOpen} toggle={toggle} direction={direction}>
         <DropdownToggle data-toggle="dropdown" tag="span">
           <img
-            src="http://tachyons.io/img/logo.jpg"
+            src={auth0User?.picture || "http://tachyons.io/img/logo.jpg"}
             className="br-100 pa1 ba b--black-10 h3 w3"
             alt="avatar"
           />
@@ -36,7 +37,11 @@ export default function ProfileIcon({
           }}
         >
           <DropdownItem onClick={toggleModal}>View Profile</DropdownItem>
-          <DropdownItem onClick={() => onRouteChange("signout")}>
+          <DropdownItem
+            onClick={() =>
+              logout({ logoutParams: { returnTo: window.location.origin } })
+            }
+          >
             Sign Out
           </DropdownItem>
         </DropdownMenu>
