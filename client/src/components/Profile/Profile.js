@@ -44,7 +44,7 @@ export default function Profile({ toggleModal, user }) {
       <article className="br3 ba b--black-40 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center bg-navy">
         <main className="pa4 w-80 white">
           <img
-            src={user.picture || "http://tachyons.io/img/logo.jpg"}
+            src={user.profile_image || "http://tachyons.io/img/logo.jpg"}
             className="h3 w3 dib"
             alt="avatar"
           />

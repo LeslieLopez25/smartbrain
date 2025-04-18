@@ -29,7 +29,7 @@ const initialState = {
     joined: "",
     pet: "",
     age: "",
-    picture: "",
+    profile_image: "",
   },
 };
 
@@ -59,6 +59,10 @@ export default function App() {
             }),
           });
 
+          if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`Failed to save user to DB: ${text}`);
+          }
           const dbUser = await response.json();
 
           if (dbUser.id) {
@@ -67,7 +71,6 @@ export default function App() {
               user: {
                 ...prevState.user,
                 ...dbUser,
-                picture: auth0User.picture,
               },
             }));
           }
@@ -128,6 +131,7 @@ export default function App() {
           })
             .then((res) => res.json())
             .then((count) => {
+              console.log("Count response:", count);
               setState((prevState) => ({
                 ...prevState,
                 user: {

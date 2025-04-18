@@ -4,10 +4,9 @@ const bcrypt = require("bcrypt-nodejs");
 const cors = require("cors");
 const knex = require("knex");
 
-const register = require("./controllers/register");
-const signin = require("./controllers/signin");
 const profile = require("./controllers/profile");
 const image = require("./controllers/image");
+const { handleAuth } = require("./controllers/auth");
 
 const db = knex({
   client: "pg",
@@ -38,12 +37,6 @@ app.get("/", (req, res) => {
   res.send(db.users);
 });
 
-app.post("/signin", signin.handleSignin(db, bcrypt));
-
-app.post("/register", (req, res) => {
-  register.handleRegister(req, res, bcrypt, db);
-});
-
 app.get("/profile/:id", (req, res) => {
   profile.handleProfileGet(req, res, db);
 });
@@ -60,6 +53,10 @@ app.post("/imageurl", (req, res) => {
   image.handleApiCall(req, res);
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`App is running on port ${process.env.PORT}`);
+app.post("/auth", (req, res) => handleAuth(req, res, db));
+
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => {
+  console.log(`App is running on port ${PORT}`);
 });

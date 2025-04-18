@@ -1,6 +1,6 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import ProfileIcon from "../Profile/ProfileIcon";
+import ProfileImage from "../Profile/ProfileImage";
 
 export default function Navigation({ toggleModal }) {
   const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
@@ -8,7 +8,7 @@ export default function Navigation({ toggleModal }) {
   return (
     <nav style={{ display: "flex", justifyContent: "flex-end" }}>
       {isAuthenticated ? (
-        <ProfileIcon toggleModal={toggleModal} />
+        <ProfileImage toggleModal={toggleModal} />
       ) : (
         <>
           <p
