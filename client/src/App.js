@@ -206,6 +206,12 @@ export default function App() {
               isProfileOpen={isProfileOpen}
               toggleModal={toggleModal}
               user={user}
+              setUser={(updatedUser) =>
+                setState((prevState) => ({
+                  ...prevState,
+                  user: updatedUser,
+                }))
+              }
             />
           </Modal>
         )}

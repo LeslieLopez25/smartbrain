@@ -9,6 +9,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 export default function ProfileImage({
   toggleModal,
+  user,
   direction = "down",
   ...args
 }) {
@@ -22,7 +23,11 @@ export default function ProfileImage({
       <Dropdown isOpen={dropdownOpen} toggle={toggle} direction={direction}>
         <DropdownToggle data-toggle="dropdown" tag="span">
           <img
-            src={auth0User?.profile_image || "http://tachyons.io/img/logo.jpg"}
+            src={
+              user?.profile_image ||
+              auth0User?.picture ||
+              "http://tachyons.io/img/logo.jpg"
+            }
             className="br-100 pa1 ba b--black-10 h3 w3"
             alt="avatar"
           />

@@ -4,36 +4,47 @@ import axios from "axios";
 import { API_URL } from "../../config";
 import "./Profile.css";
 
-export default function Profile({ toggleModal, user }) {
-  const { getAccessTokenSilently } = useAuth0();
+export default function Profile({ toggleModal, user, setUser }) {
+  const { getAccessTokenSilently, user: auth0User } = useAuth0();
+  const [profileImage, setProfileImage] = useState(
+    user.profile_image || auth0User.picture || ""
+  );
   const [name, setName] = useState(user.name || "");
   const [age, setAge] = useState(user.age || "");
   const [pet, setPet] = useState(user.pet || "");
   const [loading, setLoading] = useState(false);
 
+  console.log("🔍 Saving profile for user:", user);
+
   const saveProfile = async () => {
     try {
       setLoading(true);
       const token = await getAccessTokenSilently();
-      const response = await axios.post(
-        `${API_URL}/profile`,
-        { name, age, pet },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
 
-      if (response.status === 200) {
-        console.log("Profile updated successfully:", response.data);
-        toggleModal();
-      } else {
-        console.error("Failed to update profile");
-      }
-    } catch (error) {
-      console.error("Error saving profile:", error);
+      // build only non‑empty fields
+      const payload = {};
+      if (name) payload.name = name;
+      if (age !== "") payload.age = age;
+      if (pet) payload.pet = pet;
+      if (profileImage) payload.profile_image = profileImage;
+
+      console.log("📤 saveProfile() payload →", payload);
+
+      const url = `${API_URL}/profile/${user.id}`;
+      console.log("📡 POSTing to", url);
+      const response = await axios.post(url, payload, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 10000, // give it up to 10s
+      });
+
+      console.log("✔️  profile update response:", response.data);
+      setUser(response.data);
+      toggleModal();
+    } catch (err) {
+      console.error("❌ Error saving profile:", err);
     } finally {
       setLoading(false);
     }
@@ -44,9 +55,25 @@ export default function Profile({ toggleModal, user }) {
       <article className="br3 ba b--black-40 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center bg-navy">
         <main className="pa4 w-80 white">
           <img
-            src={user.profile_image || "http://tachyons.io/img/logo.jpg"}
+            src={
+              profileImage ||
+              auth0User?.picture ||
+              "http://tachyons.io/img/logo.jpg"
+            }
             className="h3 w3 dib"
             alt="avatar"
+          />
+          <label className="mt2 fw6" htmlFor="profile-image">
+            Profile Image URL:
+          </label>
+          <input
+            onChange={(e) => setProfileImage(e.target.value)}
+            className="pa2 ba w-100"
+            placeholder="Enter image URL"
+            type="text"
+            name="profile-image"
+            id="profile-image"
+            value={profileImage}
           />
           <h1>{name || "Your Name"}</h1>
           <h4>{`Images Submitted: ${user?.entries || 0}`}</h4>
