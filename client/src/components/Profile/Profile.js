@@ -14,8 +14,6 @@ export default function Profile({ toggleModal, user, setUser }) {
   const [pet, setPet] = useState(user.pet || "");
   const [loading, setLoading] = useState(false);
 
-  console.log("🔍 Saving profile for user:", user);
-
   const saveProfile = async () => {
     try {
       setLoading(true);
