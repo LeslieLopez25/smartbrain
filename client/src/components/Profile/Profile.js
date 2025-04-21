@@ -21,30 +21,24 @@ export default function Profile({ toggleModal, user, setUser }) {
       setLoading(true);
       const token = await getAccessTokenSilently();
 
-      // build only non‑empty fields
       const payload = {};
       if (name) payload.name = name;
       if (age !== "") payload.age = age;
       if (pet) payload.pet = pet;
       if (profileImage) payload.profile_image = profileImage;
 
-      console.log("📤 saveProfile() payload →", payload);
-
       const url = `${API_URL}/profile/${user.id}`;
-      console.log("📡 POSTing to", url);
       const response = await axios.post(url, payload, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        timeout: 10000, // give it up to 10s
+        timeout: 10000,
       });
 
-      console.log("✔️  profile update response:", response.data);
       setUser(response.data);
       toggleModal();
     } catch (err) {
-      console.error("❌ Error saving profile:", err);
     } finally {
       setLoading(false);
     }
