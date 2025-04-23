@@ -35,12 +35,12 @@ export default function Navigation({ toggleModal }) {
         <ProfileImage toggleModal={toggleModal} user={dbUser} />
       ) : (
         <>
-          <p
+          <button
             onClick={() => loginWithRedirect()}
-            className="f3 link dim white underline pa3 pointer"
+            className="f5 b mt-4 mr3 grow no-underline br-pill ba bw1 ph3 pv2 mb2 dib lightest-blue bg-transparent hover-bg-light-blue hover-light-green pointer"
           >
             Sign In
-          </p>
+          </button>
         </>
       )}
     </nav>
