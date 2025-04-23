@@ -3,8 +3,10 @@ import ParticlesBg from "particles-bg";
 import LoadingScreen from "react-loading-screen";
 import Modal from "./components/Modal/Modal";
 import Profile from "./components/Profile/Profile";
+import WelcomeLogo from "./components/WelcomeLogo.js/WelcomeLogo";
 import { useAuth0 } from "@auth0/auth0-react";
 import { API_URL } from "./config";
+
 import "./App.css";
 
 const FaceRecognition = lazy(() =>
@@ -216,7 +218,15 @@ export default function App() {
           </Modal>
         )}
 
-        {isAuthenticated ? (
+        {!isAuthenticated ? (
+          <div className="text-white mt-20 space-y-6 text-center">
+            <h2 className="welcome-screen f1 fw7">Welcome to SmartBrain!</h2>
+            <p className="f4 lightest-blue b mt4 mb4">
+              Please sign in to use the app.
+            </p>
+            <WelcomeLogo />
+          </div>
+        ) : (
           <div>
             <Logo />
             <Rank name={user.name} entries={user.entries} />
@@ -225,17 +235,6 @@ export default function App() {
               onButtonSubmit={onButtonSubmit}
             />
             <FaceRecognition boxes={boxes} imageUrl={imageUrl} />
-          </div>
-        ) : (
-          <div className="text-white text-center mt-20">
-            <h2 className="text-2xl font-bold">Welcome!</h2>
-            <p className="mb-4">Please sign in to use the app.</p>
-            <button
-              onClick={loginWithRedirect}
-              className="bg-blue-500 px-6 py-2 rounded hover:bg-blue-600"
-            >
-              Sign In
-            </button>
           </div>
         )}
       </Suspense>
