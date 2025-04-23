@@ -48,7 +48,7 @@ export default function Profile({ toggleModal, user, setUser }) {
         <main className="pa4 w-80 white">
           <img
             src={profileImage || auth0User?.picture}
-            className="h3 w3 dib"
+            className="mr3 br-100 h3 w3 dib"
             alt="avatar"
           />
           <label className="mt2 fw6" htmlFor="profile-image">
