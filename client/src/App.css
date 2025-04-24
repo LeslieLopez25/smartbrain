@@ -8,7 +8,7 @@
 }
 
 .welcome-screen {
-  background: linear-gradient(210deg, #a8ff78, #78ffd6);
+  background: linear-gradient(210deg, hsl(99, 100%, 74%), hsl(162, 100%, 74%));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
