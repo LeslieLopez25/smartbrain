@@ -1,5 +1,5 @@
 .Tilt {
-    background: linear-gradient(200deg, #77a1d3, #79cbca, #e684ae);
+    background: linear-gradient(200deg, hsl(213, 51%, 65%), hsl(179, 44%, 64%), hsl(334, 66%, 71%));
 }
 
 @keyframes wiggle {
