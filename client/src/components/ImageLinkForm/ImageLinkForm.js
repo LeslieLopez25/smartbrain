@@ -1,4 +1,5 @@
 import React from "react";
+
 import "./ImageLinkForm.css";
 
 // This component renders the input field and button for face detection
