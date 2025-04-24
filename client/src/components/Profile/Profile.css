@@ -11,13 +11,13 @@
 }
 
 .modal-close {
-    color: white;
+    color: hsl(0, 0%, 100%);
     font-size: 3rem;
     font-style: bold;
     cursor: pointer;
 }
 
 .modal-close:hover {
-    color: grey;
+    color: hsl(0, 0%, 50%);
     cursor: pointer;
 }
