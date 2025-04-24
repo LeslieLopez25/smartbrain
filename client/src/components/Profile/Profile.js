@@ -14,6 +14,9 @@ export default function Profile({ toggleModal, user, setUser }) {
   const [pet, setPet] = useState(user.pet || "");
   const [loading, setLoading] = useState(false);
 
+  const CLOUD_NAME = process.env.REACT_APP_CLOUD_NAME;
+  const UPLOAD_PRESET = process.env.REACT_APP_UPLOAD_PRESET;
+
   const saveProfile = async () => {
     try {
       setLoading(true);
@@ -42,6 +45,34 @@ export default function Profile({ toggleModal, user, setUser }) {
     }
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+
+    try {
+      setLoading(true);
+
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+      setProfileImage(data.secure_url);
+    } catch (err) {
+      console.error("Upload error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="profile-modal">
       <article className="br3 ba b--black-40 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center bg-navy">
@@ -55,13 +86,13 @@ export default function Profile({ toggleModal, user, setUser }) {
             Profile Image URL:
           </label>
           <input
-            onChange={(e) => setProfileImage(e.target.value)}
             className="pa2 ba w-100"
             placeholder="Enter image URL"
-            type="text"
+            type="file"
             name="profile-image"
             id="profile-image"
-            value={profileImage}
+            accept="image/*"
+            onChange={handleImageUpload}
           />
           <h1>{name || "Your Name"}</h1>
           <h4>{`Images Submitted: ${user?.entries || 0}`}</h4>

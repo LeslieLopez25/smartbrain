@@ -23,7 +23,11 @@ export default function ProfileImage({
       <Dropdown isOpen={dropdownOpen} toggle={toggle} direction={direction}>
         <DropdownToggle data-toggle="dropdown" tag="span">
           <img
-            src={user?.profile_image || auth0User?.picture}
+            src={
+              user?.profile_image
+                ? `${user.profile_image}?t=${new Date().getTime()}`
+                : auth0User?.picture
+            }
             className="br-100 pa1 ba b--black-10 h3 w3"
             alt="avatar"
           />

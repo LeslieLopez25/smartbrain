@@ -196,6 +196,7 @@ export default function App() {
         }
       >
         <Navigation
+          user={user}
           isSignedIn={isAuthenticated}
           loginWithRedirect={loginWithRedirect}
           logout={logout}
@@ -219,9 +220,11 @@ export default function App() {
         )}
 
         {!isAuthenticated ? (
-          <div className="text-white mt-20 space-y-6 text-center">
-            <h2 className="welcome-screen f1 fw7">Welcome to SmartBrain!</h2>
-            <p className="f4 lightest-blue b mt4 mb4">
+          <div className="text-white mt3 mt5-ns space-y-6 text-center pa3">
+            <h2 className="welcome-screen f3 f2-m f1-l fw7 mt4 mb3">
+              Welcome to SmartBrain!
+            </h2>
+            <p className="f5 f4-ns lightest-blue b mt3 mb4">
               Please sign in to use the app.
             </p>
             <WelcomeLogo />
