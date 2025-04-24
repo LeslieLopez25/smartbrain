@@ -1,6 +1,6 @@
 import React from "react";
 
-import "./ImageLinkForm.css";
+import "./ImageLinkForm.styles.css";
 
 // This component renders the input field and button for face detection
 export default function ImageLinkForm({ onInputChange, onButtonSubmit }) {
