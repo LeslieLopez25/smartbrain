@@ -2,6 +2,7 @@ import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import ProfileImage from "../Profile/ProfileImage";
 
+// Navigation bar showing sign in button or profile image depending on auth state
 export default function Navigation({ toggleModal, user }) {
   const { isAuthenticated, loginWithRedirect } = useAuth0();
 
