@@ -1,7 +1,7 @@
 import Tilt from "react-parallax-tilt";
 import brain from "./brain.png";
 
-import "./WelcomeLogo.css";
+import "./WelcomeLogo.styles.css";
 
 // Displays a tilting brain logo on the welcome screen
 export default function WelcomeLogo() {
