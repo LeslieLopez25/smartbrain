@@ -6,7 +6,7 @@ import Auth0ProviderWithNavigate from "./components/auth0/Auth0ProviderWithNavig
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "tachyons";
-import "./index.css";
+import "./index.styles.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

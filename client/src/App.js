@@ -7,8 +7,9 @@ import WelcomeLogo from "./components/WelcomeLogo.js/WelcomeLogo";
 import { useAuth0 } from "@auth0/auth0-react";
 import { API_URL } from "./config";
 
-import "./App.css";
+import "./App.styles.css";
 
+// Lazy load components for better performance
 const FaceRecognition = lazy(() =>
   import("./components/FaceRecognition/FaceRecognition")
 );
@@ -19,6 +20,7 @@ const ImageLinkForm = lazy(() =>
 );
 const Rank = lazy(() => import("./components/Rank/Rank"));
 
+// Initial user and app state
 const initialState = {
   input: "",
   imageUrl: "",
@@ -47,6 +49,7 @@ export default function App() {
   const [state, setState] = useState(initialState);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
+  // Save Auth0 user to DB when logged in
   useEffect(() => {
     if (isAuthenticated && auth0User) {
       const saveUserToDB = async () => {
@@ -67,6 +70,7 @@ export default function App() {
           }
           const dbUser = await response.json();
 
+          // Set user state from DB
           if (dbUser.id) {
             setState((prevState) => ({
               ...prevState,
@@ -85,6 +89,7 @@ export default function App() {
     }
   }, [isAuthenticated, auth0User]);
 
+  // Calculate bounding box positions from Clarifai response
   const calculateFaceLocation = (data) => {
     const image = document.getElementById("inputimage");
     const width = Number(image.width);
@@ -100,20 +105,24 @@ export default function App() {
     });
   };
 
+  // Update state with face box data
   const displayFaceBox = (boxes) => {
     setState((prevState) => ({ ...prevState, boxes }));
   };
 
+  // Update state as user types in image URL
   const onInputChange = (event) => {
     setState((prevState) => ({ ...prevState, input: event.target.value }));
   };
 
+  // When user clicks "Detect" button
   const onButtonSubmit = () => {
     setState((prevState) => ({
       ...prevState,
       imageUrl: prevState.input,
     }));
 
+    // Get face detection from backend
     fetch(`${API_URL}/imageurl`, {
       method: "post",
       headers: { "Content-Type": "application/json" },
@@ -124,6 +133,7 @@ export default function App() {
       .then((response) => response.json())
       .then((response) => {
         if (response) {
+          // Update entry count in backend
           fetch(`${API_URL}/image`, {
             method: "put",
             headers: { "Content-Type": "application/json" },
@@ -149,12 +159,14 @@ export default function App() {
       .catch((err) => console.log(err));
   };
 
+  // Toggle user profile modal
   const toggleModal = () => {
     setIsProfileOpen((prevState) => !prevState);
   };
 
   const { imageUrl, boxes, user } = state;
 
+  // Showing loading screen while Auth0 is loading
   if (isLoading) {
     return (
       <LoadingScreen
@@ -184,6 +196,7 @@ export default function App() {
         }}
       />
 
+      {/* Lazy loaded UI components */}
       <Suspense
         fallback={
           <LoadingScreen
@@ -219,6 +232,7 @@ export default function App() {
           </Modal>
         )}
 
+        {/* Show welcome screen if not signed in */}
         {!isAuthenticated ? (
           <div className="text-white mt3 mt5-ns space-y-6 text-center pa3">
             <h2 className="welcome-screen f3 f2-m f1-l fw7 mt4 mb3">
@@ -230,6 +244,7 @@ export default function App() {
             <WelcomeLogo />
           </div>
         ) : (
+          // Show app when authenticated
           <div>
             <Logo />
             <Rank name={user.name} entries={user.entries} />
