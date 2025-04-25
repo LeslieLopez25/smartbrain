@@ -1,5 +1,6 @@
 import React from "react";
 
+// Displays the user's name and how many images they've submitted
 export default function Rank({ name, entries }) {
   return (
     <div>
