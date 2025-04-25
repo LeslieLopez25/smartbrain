@@ -16,6 +16,7 @@ export default function ProfileImage({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { logout, user: auth0User } = useAuth0();
 
+  // Toggles the dropdown menu open/closed
   const toggle = () => setDropdownOpen((prevState) => !prevState);
 
   return (

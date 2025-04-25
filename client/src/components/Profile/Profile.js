@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import { API_URL } from "../../config";
-import "./Profile.css";
+
+import "./Profile.styles.css";
 
 export default function Profile({ toggleModal, user, setUser }) {
   const { getAccessTokenSilently, user: auth0User } = useAuth0();
@@ -17,6 +18,7 @@ export default function Profile({ toggleModal, user, setUser }) {
   const CLOUD_NAME = process.env.REACT_APP_CLOUD_NAME;
   const UPLOAD_PRESET = process.env.REACT_APP_UPLOAD_PRESET;
 
+  // Sends updated profile data to the backend
   const saveProfile = async () => {
     try {
       setLoading(true);
@@ -45,6 +47,7 @@ export default function Profile({ toggleModal, user, setUser }) {
     }
   };
 
+  // Uploads selected image to Cloudinary and saves the URL
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
