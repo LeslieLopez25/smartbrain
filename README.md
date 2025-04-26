@@ -1,28 +1,59 @@
-<h1>SmartBrain :brain:</h1>
+# SmartBrain :brain:
 
-<h2>An app that detects faces uses the Clarifai API.</h2>
+## An AI-powered face detection app using the Clarifai API.
 
 <p>
 
-- Built with React and styled using Tachyons on the frontend for a sleek user experience.
+- Built with **React** and styled using **Tachyons** for a sleek and responsive user interface.
 
-- Powered by Express and Node.js on the backend, with the added security of Bcrypt encryption.
+- Authentication is handled securely with **Auth0**, providing seamless sign-in/sign-out functionality.
 
-- Data is stored efficiently in a PostgreSQL database, ensuring reliability and scalability.
+- Includes a **profile modal** where users can update their name, age, pet, and profile image.
 
-- Seamlessly deployed on Render for the frontend and the backend, and Neon for the database, guaranteeing optimal performance.
+- Powered by **Express** and **Node.js** on the backend, with user data stored in a robust **PostgreSQL** database.
 
-- Now enhanced to detect multiple faces, making it more versatile and powerful than ever.
+- Passwords and sensitive info are secured using **Bcrypt** encryption (used prior to Auth0 transition).
+
+- Deployed on **Render** (frontend and backend) and **Neon** (database) for fast, scalable performance.
+
+- Now enhanced to detect **multiple faces** in a single image, making it more versatile and powerful than ever.
 
 Discover the future of web applications with our feature-rich platform.</p>
 
-### Link
+---
 
-- Live Site: [SmartBrain](https://smartbrain-mtf1.onrender.com)
+### Live Site
+
+- [SmartBrain](https://smartbrain-mtf1.onrender.com/)
+
+---
 
 ### Screenshots
 
-<img src="/client/src/assets/screenshots/screenshot.png" width="400">
-<img src="/client/src/assets/screenshots/screenshot-2.png" width="400">
-<img src="/client/src/assets/screenshots/screenshot-3.png" width="400">
-<img src="/client/src/assets/screenshots/screenshot-4.png" width="400">
+<img src="/assets/home.png" width="400">
+<img src="/assets/account.png" width="400">
+
+---
+
+### Features
+
+- **Auth0 integration** for secure, scalable authentication
+- **Clarifai face detection API** for real-time facial recognition
+- **Editable user profiles** with support for:
+  - Name
+  - Age
+  - Pet
+  - Profile image upload via Cloudinary
+- Entry tracking to keep count of images submitted
+- Lazy loading of major components for better performance
+- Fully responsive and styled with Tachyons
+
+---
+
+### Changelog
+
+- See all project updates in the [CHANGELOG.md](/CHANGELOG.md)
+
+#### Added Into Project: April 25, 2025
+
+##### Editable User Profiles and Auth0 Integration
